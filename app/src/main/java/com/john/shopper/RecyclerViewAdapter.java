@@ -1,6 +1,7 @@
 package com.john.shopper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Item item = mData.get(position);
         holder.itemName.setText(item.getName());
         holder.itemType.setText(item.getType());
+
+        // Change sections to have different background color
+        if (item.getType().equals(ItemTypes.SECTION.toString())) {
+            holder.itemView.setBackgroundColor(Color.GRAY);
+        } else {
+            holder.itemView.setBackgroundColor(0);
+        }
     }
 
     // total number of rows

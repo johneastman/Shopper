@@ -41,11 +41,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recycler_view);
-
         items = getDataFromSharedPreferences();
 
-        populateRecyclerView();
+        recyclerView = findViewById(R.id.recycler_view);
+        mAdapter = new RecyclerViewAdapter(getApplicationContext(), items);
+
+        ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(mAdapter);
+
+
     }
 
     @Override
@@ -60,59 +68,24 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.new_item:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.add_item_layout, null);
-
-                final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
-
-                final Spinner spinner = dialogView.findViewById(R.id.new_item_spinner);
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.item_types, android.R.layout.simple_spinner_item);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(adapter);
-
-                builder.setTitle(R.string.new_item_title);
-
-                // Inflate and set the layout for the dialog
-                // Pass null as the parent view because its going in the dialog layout
-                builder.setView(dialogView)
-                        // Add action buttons
-                        .setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                String itemName = editText.getText().toString();
-                                String itemType = spinner.getSelectedItem().toString();
-
-                                if (itemName.length() > 0) {
-                                    items.add(new Item(itemName, itemType));
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            }
-                        })
-                        .setNegativeButton(R.string.new_item_cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // Do nothing
-                            }
-                        });
-
-                Dialog dialog = builder.create();
+                Dialog dialog = newItemDialog();
                 dialog.show();
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setDataFromSharedPreferences(items);
+    }
 
-    private void populateRecyclerView() {
-        mAdapter = new RecyclerViewAdapter(getApplicationContext(), items);
-        ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.setAdapter(mAdapter);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setDataFromSharedPreferences(items);
     }
 
     private ArrayList<Item> getDataFromSharedPreferences(){
@@ -126,16 +99,16 @@ public class MainActivity extends AppCompatActivity {
         if (items == null)
         {
             items = new ArrayList<>();
-            items.add(new Item("Item 1", "Section"));
-            items.add(new Item("Item 2", "Item"));
-            items.add(new Item("Item 3", "Item"));
-            items.add(new Item("Item 4", "Item"));
-            items.add(new Item("Item 5", "Item"));
-            items.add(new Item("Item 6", "Section"));
-            items.add(new Item("Item 7", "Item"));
-            items.add(new Item("Item 8", "Item"));
-            items.add(new Item("Item 9", "Section"));
-            items.add(new Item("Item 10", "Item"));
+            items.add(new Item("Item 1", ItemTypes.SECTION.toString()));
+            items.add(new Item("Item 2", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 3", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 4", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 5", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 6", ItemTypes.SECTION.toString()));
+            items.add(new Item("Item 7", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 8", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 9", ItemTypes.SECTION.toString()));
+            items.add(new Item("Item 10", ItemTypes.ITEM.toString()));
         }
         return items;
     }
@@ -150,15 +123,46 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        setDataFromSharedPreferences(items);
-    }
+    /**
+     * @return alert dialog for adding new items
+     */
+    private Dialog newItemDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.add_item_layout, null);
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        setDataFromSharedPreferences(items);
+        final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
+
+        final Spinner spinner = dialogView.findViewById(R.id.new_item_spinner);
+        ArrayAdapter<ItemTypes> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, ItemTypes.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        builder.setTitle(R.string.new_item_title);
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(dialogView)
+                // Add action buttons
+                .setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        String itemName = editText.getText().toString();
+                        ItemTypes itemType = (ItemTypes) spinner.getSelectedItem();
+
+                        if (itemName.length() > 0) {
+                            items.add(new Item(itemName, itemType.toString()));
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.new_item_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Do nothing
+                    }
+                });
+
+        return builder.create();
     }
 }
