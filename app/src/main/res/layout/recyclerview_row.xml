@@ -7,7 +7,12 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/tvAnimalName"
+        android:id="@+id/item_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/item_type"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

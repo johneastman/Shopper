@@ -8,4 +8,10 @@
     <string name="new_item_cancel">Cancel</string>
     <string name="new_item_add">Add</string>
     <string name="new_item_title">Add Item</string>
+
+    <string-array name="item_types">
+        <item>Item</item>
+        <item>Section</item>
+    </string-array>
+
 </resources>

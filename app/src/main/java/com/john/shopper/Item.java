@@ -3,13 +3,18 @@ package com.john.shopper;
 public class Item {
 
     private String name;
+    private String type;
 
-    public Item(String name) {
+    public Item(String name, String type) {
         this.name = name;
+        this.type = type;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
+    }
+
+    public String getType() {
+        return this.type;
     }
 }

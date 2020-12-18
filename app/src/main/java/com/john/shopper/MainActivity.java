@@ -16,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -58,10 +60,17 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.new_item:
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.add_item_layout, null);
+
                 final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
+
+                final Spinner spinner = dialogView.findViewById(R.id.new_item_spinner);
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                        R.array.item_types, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapter);
 
                 builder.setTitle(R.string.new_item_title);
 
@@ -72,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                String input = editText.getText().toString();
-                                if (input.length() > 0) {
-                                    items.add(new Item(input));
+                                String itemName = editText.getText().toString();
+                                String itemType = spinner.getSelectedItem().toString();
+
+                                if (itemName.length() > 0) {
+                                    items.add(new Item(itemName, itemType));
                                     mAdapter.notifyDataSetChanged();
                                 }
                             }
@@ -115,16 +126,16 @@ public class MainActivity extends AppCompatActivity {
         if (items == null)
         {
             items = new ArrayList<>();
-            items.add(new Item("Item 1"));
-            items.add(new Item("Item 2"));
-            items.add(new Item("Item 3"));
-            items.add(new Item("Item 4"));
-            items.add(new Item("Item 5"));
-            items.add(new Item("Item 6"));
-            items.add(new Item("Item 7"));
-            items.add(new Item("Item 8"));
-            items.add(new Item("Item 9"));
-            items.add(new Item("Item 10"));
+            items.add(new Item("Item 1", "Section"));
+            items.add(new Item("Item 2", "Item"));
+            items.add(new Item("Item 3", "Item"));
+            items.add(new Item("Item 4", "Item"));
+            items.add(new Item("Item 5", "Item"));
+            items.add(new Item("Item 6", "Section"));
+            items.add(new Item("Item 7", "Item"));
+            items.add(new Item("Item 8", "Item"));
+            items.add(new Item("Item 9", "Section"));
+            items.add(new Item("Item 10", "Item"));
         }
         return items;
     }

@@ -36,7 +36,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Item item = mData.get(position);
-        holder.myTextView.setText(item.getName());
+        holder.itemName.setText(item.getName());
+        holder.itemType.setText(item.getType());
     }
 
     // total number of rows
@@ -59,11 +60,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+        TextView itemName;
+        TextView itemType;
 
         ViewHolder(View itemView) {
             super(itemView);
-            myTextView = itemView.findViewById(R.id.tvAnimalName);
+            itemName = itemView.findViewById(R.id.item_name);
+            itemType = itemView.findViewById(R.id.item_type);
+
             itemView.setOnClickListener(this);
         }
 
