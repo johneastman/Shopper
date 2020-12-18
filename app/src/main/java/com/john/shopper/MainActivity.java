@@ -1,18 +1,22 @@
 package com.john.shopper;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -37,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
 
-        Log.e("BEFORE", "getting shared preferences");
         items = getDataFromSharedPreferences();
-        Log.e("AFTER", "retrieved shared preferences");
 
         populateRecyclerView();
     }
@@ -56,7 +58,36 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.new_item:
-                Toast.makeText(getApplicationContext(), "Add new item", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.add_item_layout, null);
+                final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
+
+                builder.setTitle(R.string.new_item_title);
+
+                // Inflate and set the layout for the dialog
+                // Pass null as the parent view because its going in the dialog layout
+                builder.setView(dialogView)
+                        // Add action buttons
+                        .setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                String input = editText.getText().toString();
+                                if (input.length() > 0) {
+                                    items.add(new Item(input));
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.new_item_cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Do nothing
+                            }
+                        });
+
+                Dialog dialog = builder.create();
+                dialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
