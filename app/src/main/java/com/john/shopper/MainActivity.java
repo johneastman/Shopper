@@ -1,7 +1,9 @@
 package com.john.shopper;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,6 +12,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new RecyclerViewAdapter(getApplicationContext(), items);
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                setActionBarSubTitle();
+            }
+        });
 
         ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -53,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(mAdapter);
 
-
+        setActionBarSubTitle();
     }
 
     @Override
@@ -164,5 +173,22 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         return builder.create();
+    }
+
+    private void setActionBarSubTitle() {
+        int incompleteItemsCount = 0;
+        for (Item item : items) {
+            if (item.getType().equals(ItemTypes.ITEM.toString()) && !item.isComplete()) {
+                incompleteItemsCount += 1;
+            }
+        }
+        Resources res = getResources();
+        String itemsSubTitleText = res.getQuantityString(R.plurals.incompleted_items_count,
+                incompleteItemsCount, incompleteItemsCount);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(itemsSubTitleText);
+        }
     }
 }

@@ -9,4 +9,10 @@
     <string name="new_item_add">Add</string>
     <string name="new_item_title">Add Item</string>
 
+    <!-- actionBar subtitle -->
+    <plurals name="incompleted_items_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
 </resources>
