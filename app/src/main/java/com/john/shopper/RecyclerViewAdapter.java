@@ -2,11 +2,12 @@ package com.john.shopper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,14 +38,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Item item = mData.get(position);
-        holder.itemName.setText(item.getName());
-        holder.itemType.setText(item.getType());
+        holder.itemNameTextView.setText(item.getName());
 
         // Change sections to have different background color
         if (item.getType().equals(ItemTypes.SECTION.toString())) {
             holder.itemView.setBackgroundColor(Color.GRAY);
         } else {
             holder.itemView.setBackgroundColor(0);
+        }
+
+        // Cross out completed items
+        if (item.isComplete()) {
+            holder.itemNameTextView.setPaintFlags(holder.itemNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.itemNameTextView.setTypeface(null, Typeface.NORMAL);
+        } else {
+            holder.itemNameTextView.setPaintFlags(0);
+            holder.itemNameTextView.setTypeface(null, Typeface.BOLD);
         }
     }
 
@@ -68,20 +77,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView itemName;
-        TextView itemType;
+        TextView itemNameTextView;
 
         ViewHolder(View itemView) {
             super(itemView);
-            itemName = itemView.findViewById(R.id.item_name);
-            itemType = itemView.findViewById(R.id.item_type);
+            itemNameTextView = itemView.findViewById(R.id.item_name_text_view);
 
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(mContext, mData.get(getAdapterPosition()).getName(), Toast.LENGTH_LONG).show();
+            int itemIndex = getAdapterPosition();
+            Item selectedItem = mData.get(itemIndex);
+
+            // Only allow items to be crossed off
+            if (selectedItem.getType().equals(ItemTypes.ITEM.toString())) {
+                boolean newStatus = !selectedItem.isComplete();
+                selectedItem.setComplete(newStatus);
+            }
+
+            notifyDataSetChanged();
         }
     }
 }
