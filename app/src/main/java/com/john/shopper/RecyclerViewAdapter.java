@@ -41,7 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.itemNameTextView.setText(item.getName());
 
         // Change sections to have different background color
-        if (item.getType().equals(ItemTypes.SECTION.toString())) {
+        if (item.isSection()) {
             holder.itemView.setBackgroundColor(Color.GRAY);
         } else {
             holder.itemView.setBackgroundColor(0);
@@ -92,7 +92,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Item selectedItem = mData.get(itemIndex);
 
             // Only allow items to be crossed off
-            if (selectedItem.getType().equals(ItemTypes.ITEM.toString())) {
+            if (!selectedItem.isSection()) {
                 boolean newStatus = !selectedItem.isComplete();
                 selectedItem.setComplete(newStatus);
             }

@@ -3,12 +3,12 @@ package com.john.shopper;
 public class Item {
 
     private String name;
-    private String type;
+    private boolean isSection;
     private boolean isComplete;
 
-    public Item(String name, String type) {
+    public Item(String name, boolean isSection) {
         this.name = name;
-        this.type = type;
+        this.isSection = isSection;
 
         this.isComplete = false;
     }
@@ -17,8 +17,8 @@ public class Item {
         return this.name;
     }
 
-    public String getType() {
-        return this.type;
+    public boolean isSection() {
+        return this.isSection;
     }
 
     public boolean isComplete() {

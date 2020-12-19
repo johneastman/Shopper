@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -108,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
         if (items == null)
         {
             items = new ArrayList<>();
-            items.add(new Item("Item 1", ItemTypes.SECTION.toString()));
-            items.add(new Item("Item 2", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 3", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 4", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 5", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 6", ItemTypes.SECTION.toString()));
-            items.add(new Item("Item 7", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 8", ItemTypes.ITEM.toString()));
-            items.add(new Item("Item 9", ItemTypes.SECTION.toString()));
-            items.add(new Item("Item 10", ItemTypes.ITEM.toString()));
+            items.add(new Item("Item 1", true));
+            items.add(new Item("Item 2", false));
+            items.add(new Item("Item 3", false));
+            items.add(new Item("Item 4", false));
+            items.add(new Item("Item 5", false));
+            items.add(new Item("Item 6", true));
+            items.add(new Item("Item 7", false));
+            items.add(new Item("Item 8", false));
+            items.add(new Item("Item 9", false));
+            items.add(new Item("Item 10", false));
         }
         return items;
     }
@@ -143,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
         final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
 
         final Spinner spinner = dialogView.findViewById(R.id.new_item_spinner);
-        ArrayAdapter<ItemTypes> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, ItemTypes.values());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, ItemTypes.getItemTypes());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -158,10 +159,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         String itemName = editText.getText().toString();
-                        ItemTypes itemType = (ItemTypes) spinner.getSelectedItem();
+                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         if (itemName.length() > 0) {
-                            items.add(new Item(itemName, itemType.toString()));
+                            items.add(new Item(itemName, ItemTypes.isSection(itemTypeDescriptor)));
                             mAdapter.notifyDataSetChanged();
                         }
                     }
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private void setActionBarSubTitle() {
         int incompleteItemsCount = 0;
         for (Item item : items) {
-            if (item.getType().equals(ItemTypes.ITEM.toString()) && !item.isComplete()) {
+            if (!item.isSection() && !item.isComplete()) {
                 incompleteItemsCount += 1;
             }
         }

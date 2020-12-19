@@ -1,17 +1,18 @@
 package com.john.shopper;
 
-public enum ItemTypes {
-    ITEM("Item"),
-    SECTION("Section");
+import java.util.ArrayList;
+import java.util.Arrays;
 
-    private String itemType;
+public class ItemTypes {
 
-    ItemTypes(String itemType) {
-        this.itemType = itemType;
+    public static final String ITEM = "Item";
+    public static final String SECTION = "Section";
+
+    public static ArrayList<String> getItemTypes() {
+        return new ArrayList<>(Arrays.asList(ITEM, SECTION));
     }
 
-    @Override
-    public String toString() {
-        return this.itemType;
+    public static boolean isSection(String itemDescriptor) {
+        return itemDescriptor.equals(SECTION);
     }
 }
