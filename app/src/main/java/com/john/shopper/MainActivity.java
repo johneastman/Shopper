@@ -3,7 +3,6 @@ package com.john.shopper;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         items = getDataFromSharedPreferences();
 
         recyclerView = findViewById(R.id.recycler_view);
-        mAdapter = new RecyclerViewAdapter(getApplicationContext(), items);
+        mAdapter = new RecyclerViewAdapter(MainActivity.this, items);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -78,7 +77,26 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.new_item:
-                Dialog dialog = newItemDialog();
+                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this);
+                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        EditText editText = newItemDialog.getEditText();
+                        Spinner spinner = newItemDialog.getSpinner();
+
+                        String itemName = editText.getText().toString();
+                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
+
+                        if (itemName.length() > 0) {
+                            items.add(new Item(itemName, ItemTypes.isSection(itemTypeDescriptor)));
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+                newItemDialog.setTitle(R.string.new_item_title);
+
+                Dialog dialog = newItemDialog.getDialog(null);
                 dialog.show();
                 return true;
             default:
@@ -109,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         if (items == null)
         {
             items = new ArrayList<>();
-            items.add(new Item("Item 1", true));
+            items.add(new Item("Item 1111111111111111111111111111111111111111111111111111111111111111111", true));
             items.add(new Item("Item 2", false));
             items.add(new Item("Item 3", false));
             items.add(new Item("Item 4", false));
@@ -131,49 +149,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(ITEMS_TAG, jsonCurProduct);
         editor.apply();
-    }
-
-    /**
-     * @return alert dialog for adding new items
-     */
-    private Dialog newItemDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.add_item_layout, null);
-
-        final EditText editText = dialogView.findViewById(R.id.new_item_edit_text);
-
-        final Spinner spinner = dialogView.findViewById(R.id.new_item_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, ItemTypes.getItemTypes());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        builder.setTitle(R.string.new_item_title);
-
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(dialogView)
-                // Add action buttons
-                .setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        String itemName = editText.getText().toString();
-                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-
-                        if (itemName.length() > 0) {
-                            items.add(new Item(itemName, ItemTypes.isSection(itemTypeDescriptor)));
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.new_item_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Do nothing
-                    }
-                });
-
-        return builder.create();
     }
 
     private void setActionBarSubTitle() {
