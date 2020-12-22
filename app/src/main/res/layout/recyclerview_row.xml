@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,16 +10,23 @@
         android:id="@+id/item_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toStartOf="@id/edit_item_button"
+        android:layout_toStartOf="@id/item_options_layout"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/edit_item_button"
+    <LinearLayout
+        android:id="@+id/item_options_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:text="@string/edit_item_button_text" />
+        android:layout_centerVertical="true">
+
+        <ImageButton
+            android:id="@+id/edit_item_button"
+            android:src="@drawable/ic_edit_black_24dp"
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </RelativeLayout>
