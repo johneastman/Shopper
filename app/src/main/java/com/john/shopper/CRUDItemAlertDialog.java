@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -16,8 +18,10 @@ public class CRUDItemAlertDialog {
     private Context context;
     private EditText editText;
     private Spinner spinner;
+    private RadioGroup radioGroup;
 
     private int titleResourceId;
+    private boolean isAddToBottom = true;
 
     private int positiveButtonResourceId;
     private DialogInterface.OnClickListener positiveButtonAction = null;
@@ -48,6 +52,22 @@ public class CRUDItemAlertDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.add_item_layout, null);
+
+        radioGroup = dialogView.findViewById(R.id.new_item_location_radio_group);
+        radioGroup.check(R.id.new_item_bottom_of_list_radio_button);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId) {
+                    case R.id.new_item_top_of_list_radio_button:
+                        isAddToBottom = false;
+                        break;
+                    case R.id.new_item_bottom_of_list_radio_button:
+                        isAddToBottom = true;
+                        break;
+                }
+            }
+        });
 
         editText = dialogView.findViewById(R.id.new_item_edit_text);
         if (item != null) {
@@ -83,5 +103,9 @@ public class CRUDItemAlertDialog {
 
     public Spinner getSpinner() {
         return this.spinner;
+    }
+
+    public boolean isAddToBottom() {
+        return this.isAddToBottom;
     }
 }

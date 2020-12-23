@@ -8,6 +8,8 @@
     <string name="new_item_cancel">Cancel</string>
     <string name="new_item_add">Add</string>
     <string name="new_item_title">Add Item</string>
+    <string name="new_item_top_of_list_radio_button">Top of List</string>
+    <string name="new_item_bottom_of_list_radio_button">Bottom of List</string>
 
     <!-- update item dialog options -->
     <string name="update_item_add">Update</string>

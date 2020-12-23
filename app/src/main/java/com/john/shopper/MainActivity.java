@@ -88,7 +88,16 @@ public class MainActivity extends AppCompatActivity {
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         if (itemName.length() > 0) {
-                            items.add(new Item(itemName, ItemTypes.isSection(itemTypeDescriptor)));
+
+                            Item newItem = new Item(itemName, ItemTypes.isSection(itemTypeDescriptor));
+
+                            // Add items to list based on whether the "Top of List" or "Bottom of List"
+                            // radio buttons are selected in the new item dialog.
+                            if (newItemDialog.isAddToBottom()) {
+                                items.add(newItem);
+                            } else {
+                                items.add(0, newItem);
+                            }
                             mAdapter.notifyDataSetChanged();
                         }
                     }
