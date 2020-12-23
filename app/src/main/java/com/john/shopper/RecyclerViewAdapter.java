@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +53,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext);
+
+                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, mData.size() - 1, false));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
+
+                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
 
                 editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
                     @Override
@@ -63,8 +70,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         String newName = editText.getText().toString();
                         String newItemTypeDescriptor = spinner.getSelectedItem().toString();
 
+                        int newPosition = editItemDialog.getNewItemPosition();
                         mData.remove(position);
-                        mData.add(position, new Item(newName, ItemTypes.isSection(newItemTypeDescriptor)));
+                        mData.add(newPosition, new Item(newName, ItemTypes.isSection(newItemTypeDescriptor)));
                         notifyDataSetChanged();
                     }
                 });

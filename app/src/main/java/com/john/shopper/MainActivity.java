@@ -77,7 +77,12 @@ public class MainActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.new_item:
-                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this);
+
+                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, items.size(), false));
+
+                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this, radioButtonsDataList);
                 newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -88,16 +93,9 @@ public class MainActivity extends AppCompatActivity {
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         if (itemName.length() > 0) {
-
                             Item newItem = new Item(itemName, ItemTypes.isSection(itemTypeDescriptor));
-
-                            // Add items to list based on whether the "Top of List" or "Bottom of List"
-                            // radio buttons are selected in the new item dialog.
-                            if (newItemDialog.isAddToBottom()) {
-                                items.add(newItem);
-                            } else {
-                                items.add(0, newItem);
-                            }
+                            int newItemPosition = newItemDialog.getNewItemPosition();
+                            items.add(newItemPosition, newItem);
                             mAdapter.notifyDataSetChanged();
                         }
                     }

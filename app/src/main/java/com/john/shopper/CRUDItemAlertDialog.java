@@ -3,25 +3,60 @@ package com.john.shopper;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.List;
+
 public class CRUDItemAlertDialog {
+
+    public static class RadioButtonData {
+
+        private int textResourceId;
+        private int position;
+        private int id = View.generateViewId();
+        private boolean isDefault;
+
+        RadioButtonData(int textResourceId, int position, boolean isDefault) {
+            this.textResourceId = textResourceId;
+            this.position = position;
+            this.isDefault = isDefault;
+        }
+
+        public int getTextResourceId() {
+            return this.textResourceId;
+        }
+
+        public int getPosition() {
+            return this.position;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public boolean isDefault() {
+            return this.isDefault;
+        }
+    }
 
     private Context context;
     private EditText editText;
     private Spinner spinner;
     private RadioGroup radioGroup;
 
+    private List<RadioButtonData> radioButtonsDataList;
+
     private int titleResourceId;
-    private boolean isAddToBottom = true;
+    private int newItemPosition;
 
     private int positiveButtonResourceId;
     private DialogInterface.OnClickListener positiveButtonAction = null;
@@ -30,8 +65,9 @@ public class CRUDItemAlertDialog {
     private DialogInterface.OnClickListener negativeButtonAction = null;
 
 
-    public CRUDItemAlertDialog(Context context) {
+    public CRUDItemAlertDialog(Context context, List<RadioButtonData> radioButtonsDataList) {
         this.context = context;
+        this.radioButtonsDataList = radioButtonsDataList;
     }
 
     public void setTitle(int titleResourceId) {
@@ -54,20 +90,18 @@ public class CRUDItemAlertDialog {
         View dialogView = inflater.inflate(R.layout.add_item_layout, null);
 
         radioGroup = dialogView.findViewById(R.id.new_item_location_radio_group);
-        radioGroup.check(R.id.new_item_bottom_of_list_radio_button);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch(checkedId) {
-                    case R.id.new_item_top_of_list_radio_button:
-                        isAddToBottom = false;
+                for (RadioButtonData radioButtonData : radioButtonsDataList) {
+                    if (radioButtonData.getId() == checkedId) {
+                        newItemPosition = radioButtonData.getPosition();
                         break;
-                    case R.id.new_item_bottom_of_list_radio_button:
-                        isAddToBottom = true;
-                        break;
+                    }
                 }
             }
         });
+        this.addRadioButtons();
 
         editText = dialogView.findViewById(R.id.new_item_edit_text);
         if (item != null) {
@@ -105,7 +139,21 @@ public class CRUDItemAlertDialog {
         return this.spinner;
     }
 
-    public boolean isAddToBottom() {
-        return this.isAddToBottom;
+    public int getNewItemPosition() {
+        return this.newItemPosition;
+    }
+
+    private void addRadioButtons() {
+
+        for (RadioButtonData radioButtonObject : radioButtonsDataList) {
+            RadioButton rb = new RadioButton(context);
+            rb.setId(radioButtonObject.getId());
+
+            String text = context.getResources().getString(radioButtonObject.getTextResourceId());
+            rb.setText(text);
+            rb.setChecked(radioButtonObject.isDefault);
+
+            radioGroup.addView(rb);
+        }
     }
 }

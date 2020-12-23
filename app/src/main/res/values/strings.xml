@@ -4,16 +4,16 @@
     <!-- menu items -->
     <string name="new_item_menu_title">Add New Item</string>
 
-    <!-- new item dialog options -->
+    <!-- new/update item dialog options -->
     <string name="new_item_cancel">Cancel</string>
     <string name="new_item_add">Add</string>
     <string name="new_item_title">Add Item</string>
-    <string name="new_item_top_of_list_radio_button">Top of List</string>
-    <string name="new_item_bottom_of_list_radio_button">Bottom of List</string>
-
-    <!-- update item dialog options -->
     <string name="update_item_add">Update</string>
     <string name="update_item_title">Update Item</string>
+    <string name="new_item_location_header">Move Item To</string>
+    <string name="new_item_top_of_list">Top of List</string>
+    <string name="new_item_bottom_of_list">Bottom of List</string>
+    <string name="new_item_at_current_position">At Current Position</string>
 
     <!-- actionBar subtitle -->
     <plurals name="incompleted_items_count">
