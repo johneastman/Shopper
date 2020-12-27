@@ -53,7 +53,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, mData.size() - 1, false));
@@ -84,11 +83,63 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
+        holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean sectionFound = false;
+                int bottomOfSectionPosition = position + 1;
+                for (int i = bottomOfSectionPosition; i < mData.size(); i++){
+                    Item currentItem = mData.get(i);
+                    if (currentItem.isSection()) {
+                        bottomOfSectionPosition = i;
+                        sectionFound = true;
+                        break;
+                    }
+                }
+
+                // If no section was found, this item is being added to the last section in the list. The "bottom of list" option
+                // in this situation will be a new item at the end of the entire list.
+                if (!sectionFound) {
+                    bottomOfSectionPosition = mData.size();
+                }
+
+                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
+
+                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        EditText editText = newItemDialog.getEditText();
+                        Spinner spinner = newItemDialog.getSpinner();
+
+                        String itemName = editText.getText().toString();
+                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
+
+                        if (itemName.length() > 0) {
+                            Item newItem = new Item(itemName, ItemTypes.isSection(itemTypeDescriptor));
+                            int newItemPosition = newItemDialog.getNewItemPosition();
+                            mData.add(newItemPosition, newItem);
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+                newItemDialog.setTitle(R.string.new_item_title);
+
+                Dialog dialog = newItemDialog.getDialog(null);
+                dialog.show();
+            }
+        });
+
         // Change sections to have different background color
         if (item.isSection()) {
             holder.itemView.setBackgroundColor(Color.GRAY);
+            holder.sectionAddItemButton.setVisibility(View.VISIBLE);
         } else {
             holder.itemView.setBackgroundColor(0);
+            holder.sectionAddItemButton.setVisibility(View.INVISIBLE);
         }
 
         // Cross out completed items
@@ -125,11 +176,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView itemNameTextView;
         ImageButton editItemButton;
+        ImageButton sectionAddItemButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             itemNameTextView = itemView.findViewById(R.id.item_name_text_view);
             editItemButton = itemView.findViewById(R.id.edit_item_button);
+            sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
 
             itemView.setOnClickListener(this);
         }

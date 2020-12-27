@@ -42,10 +42,6 @@ public class CRUDItemAlertDialog {
         public int getId() {
             return this.id;
         }
-
-        public boolean isDefault() {
-            return this.isDefault;
-        }
     }
 
     private Context context;
