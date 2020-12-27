@@ -55,9 +55,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View v) {
 
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, mData.size() - 1, false));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, mData.size() - 1, false));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
                 final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
 
@@ -111,6 +111,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onViewMoved(int oldPosition, int newPosition) {
         Collections.swap(mData, oldPosition, newPosition);
         notifyItemMoved(oldPosition, newPosition);
+        notifyDataSetChanged();
     }
 
     @Override
