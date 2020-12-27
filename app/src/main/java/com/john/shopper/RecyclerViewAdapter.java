@@ -139,8 +139,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
         ItemsModel.getInstance().swap(oldPosition, newPosition);
+
+        notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
-        notifyDataSetChanged();
     }
 
     @Override

@@ -114,12 +114,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setActionBarSubTitle() {
-        int incompleteItemsCount = 0;
-        for (Item item : ItemsModel.getInstance().getItems()) {
-            if (!item.isSection() && !item.isComplete()) {
-                incompleteItemsCount += 1;
-            }
-        }
+
+        int incompleteItemsCount = ItemsModel.getInstance().getNumberOfIncompleteItems();
         Resources res = getResources();
         String itemsSubTitleText = res.getQuantityString(R.plurals.incompleted_items_count,
                 incompleteItemsCount, incompleteItemsCount);

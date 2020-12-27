@@ -108,6 +108,16 @@ public class ItemsModel {
         this.items = items;
     }
 
+    public int getNumberOfIncompleteItems() {
+        int incompleteItemsCount = 0;
+        for (Item item : ItemsModel.getInstance().getItems()) {
+            if (!item.isSection() && !item.isComplete()) {
+                incompleteItemsCount += 1;
+            }
+        }
+        return incompleteItemsCount;
+    }
+
     public void clear() {
         this.items.clear();
     }
