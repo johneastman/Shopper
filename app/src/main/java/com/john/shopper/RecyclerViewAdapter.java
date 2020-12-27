@@ -26,14 +26,12 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements ItemMoveCallback.ActionCompletionContract {
 
-    private List<Item> mData;
     private LayoutInflater mInflater;
     private Context mContext;
 
     // data is passed into the constructor
-    RecyclerViewAdapter(Context context, List<Item> data) {
+    RecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
         this.mContext = context;
     }
 
@@ -47,7 +45,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final Item item = mData.get(position);
+        final Item item = ItemsModel.getInstance().get(position);
         holder.itemNameTextView.setText(item.getName());
 
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View v) {
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, mData.size() - 1, false));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize() - 1, false));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
                 final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
@@ -70,8 +68,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         String newItemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         int newPosition = editItemDialog.getNewItemPosition();
-                        mData.remove(position);
-                        mData.add(newPosition, new Item(newName, ItemTypes.isSection(newItemTypeDescriptor)));
+                        ItemsModel.getInstance().remove(position);
+                        ItemsModel.getInstance().addItem(newPosition, newName, ItemTypes.isSection(newItemTypeDescriptor));
                         notifyDataSetChanged();
                     }
                 });
@@ -86,22 +84,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean sectionFound = false;
-                int bottomOfSectionPosition = position + 1;
-                for (int i = bottomOfSectionPosition; i < mData.size(); i++){
-                    Item currentItem = mData.get(i);
-                    if (currentItem.isSection()) {
-                        bottomOfSectionPosition = i;
-                        sectionFound = true;
-                        break;
-                    }
-                }
 
-                // If no section was found, this item is being added to the last section in the list. The "bottom of list" option
-                // in this situation will be a new item at the end of the entire list.
-                if (!sectionFound) {
-                    bottomOfSectionPosition = mData.size();
-                }
+                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(position + 1);
 
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
@@ -118,9 +102,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         if (itemName.length() > 0) {
-                            Item newItem = new Item(itemName, ItemTypes.isSection(itemTypeDescriptor));
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            mData.add(newItemPosition, newItem);
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, ItemTypes.isSection(itemTypeDescriptor));
                             notifyDataSetChanged();
                         }
                     }
@@ -155,19 +138,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // total number of rows
     @Override
     public int getItemCount() {
-        return mData.size();
+        return ItemsModel.getInstance().getSize();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        Collections.swap(mData, oldPosition, newPosition);
+        ItemsModel.getInstance().swap(oldPosition, newPosition);
         notifyItemMoved(oldPosition, newPosition);
         notifyDataSetChanged();
     }
 
     @Override
     public void onViewSwiped(int position) {
-        mData.remove(position);
+        ItemsModel.getInstance().remove(position);
         notifyItemRemoved(position);
         notifyDataSetChanged();
     }
@@ -190,7 +173,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void onClick(View view) {
             int itemIndex = getAdapterPosition();
-            Item selectedItem = mData.get(itemIndex);
+            Item selectedItem = ItemsModel.getInstance().get(itemIndex);
 
             // Only allow items to be crossed off
             if (!selectedItem.isSection()) {

@@ -28,22 +28,18 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String ITEMS_TAG = "saved_items";
-    private static final String SHARED_PREFS = "shared_prefs";
-
     RecyclerView recyclerView;
     RecyclerViewAdapter mAdapter;
-    ArrayList<Item> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        items = getDataFromSharedPreferences();
+        ItemsModel.getInstance().load(getApplicationContext());
 
         recyclerView = findViewById(R.id.recycler_view);
-        mAdapter = new RecyclerViewAdapter(MainActivity.this, items);
+        mAdapter = new RecyclerViewAdapter(MainActivity.this);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.new_item:
 
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, items.size(), true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize(), true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
 
@@ -94,9 +90,8 @@ public class MainActivity extends AppCompatActivity {
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
 
                         if (itemName.length() > 0) {
-                            Item newItem = new Item(itemName, ItemTypes.isSection(itemTypeDescriptor));
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            items.add(newItemPosition, newItem);
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, ItemTypes.isSection(itemTypeDescriptor));
                             mAdapter.notifyDataSetChanged();
                         }
                     }
@@ -115,53 +110,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        setDataFromSharedPreferences(items);
+        ItemsModel.getInstance().save(getApplicationContext());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        setDataFromSharedPreferences(items);
-    }
-
-    private ArrayList<Item> getDataFromSharedPreferences(){
-        Gson gson = new Gson();
-        ArrayList<Item> items;
-
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        String jsonPreferences = sharedPref.getString(ITEMS_TAG, "");
-        Type type = new TypeToken<List<Item>>() {}.getType();
-        items = gson.fromJson(jsonPreferences, type);
-        if (items == null)
-        {
-            items = new ArrayList<>();
-            items.add(new Item("Item 1111111111111111111111111111111111111111111111111111111111111111111", true));
-            items.add(new Item("Item 2", false));
-            items.add(new Item("Item 3", false));
-            items.add(new Item("Item 4", false));
-            items.add(new Item("Item 5", false));
-            items.add(new Item("Item 6", true));
-            items.add(new Item("Item 7", false));
-            items.add(new Item("Item 8", false));
-            items.add(new Item("Item 9", false));
-            items.add(new Item("Item 10", false));
-        }
-        return items;
-    }
-
-    private void setDataFromSharedPreferences(List<Item> items){
-        Gson gson = new Gson();
-        String jsonCurProduct = gson.toJson(items);
-
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(ITEMS_TAG, jsonCurProduct);
-        editor.apply();
+        ItemsModel.getInstance().save(getApplicationContext());
     }
 
     private void setActionBarSubTitle() {
         int incompleteItemsCount = 0;
-        for (Item item : items) {
+        for (Item item : ItemsModel.getInstance().getItems()) {
             if (!item.isSection() && !item.isComplete()) {
                 incompleteItemsCount += 1;
             }
