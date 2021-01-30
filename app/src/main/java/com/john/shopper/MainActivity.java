@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, ItemTypes.isSection(itemTypeDescriptor));
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, 1, ItemTypes.isSection(itemTypeDescriptor));
                             mAdapter.notifyDataSetChanged();
                         }
                     }

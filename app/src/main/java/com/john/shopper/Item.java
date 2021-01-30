@@ -5,9 +5,11 @@ public class Item {
     private String name;
     private boolean isSection;
     private boolean isComplete;
+    private int quantity;
 
-    public Item(String name, boolean isSection) {
+    public Item(String name, int quantity, boolean isSection) {
         this.name = name;
+        this.quantity = quantity;
         this.isSection = isSection;
 
         this.isComplete = false;
@@ -27,5 +29,13 @@ public class Item {
 
     public void setComplete(boolean complete) {
         isComplete = complete;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

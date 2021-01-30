@@ -64,7 +64,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         int newPosition = editItemDialog.getNewItemPosition();
                         ItemsModel.getInstance().remove(position);
-                        ItemsModel.getInstance().addItem(newPosition, newName, ItemTypes.isSection(newItemTypeDescriptor));
+                        ItemsModel.getInstance().addItem(newPosition, newName, 1, ItemTypes.isSection(newItemTypeDescriptor));
                         notifyDataSetChanged();
                     }
                 });
@@ -98,7 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, ItemTypes.isSection(itemTypeDescriptor));
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, 1, ItemTypes.isSection(itemTypeDescriptor));
                             notifyDataSetChanged();
                         }
                     }

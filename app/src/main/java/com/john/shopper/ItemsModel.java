@@ -30,8 +30,8 @@ public class ItemsModel {
         return this.items;
     }
 
-    public void addItem(int position, String name, boolean isSection) {
-        Item newItem = new Item(name, isSection);
+    public void addItem(int position, String name, int quantity, boolean isSection) {
+        Item newItem = new Item(name, quantity, isSection);
         items.add(position, newItem);
     }
 
@@ -75,6 +75,7 @@ public class ItemsModel {
     public void save(Context context) {
         Gson gson = new Gson();
         String jsonCurProduct = gson.toJson(items);
+        System.out.println(jsonCurProduct);
 
         SharedPreferences sharedPref = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -93,16 +94,16 @@ public class ItemsModel {
         if (items == null)
         {
             items = new ArrayList<>();
-            items.add(new Item("Item 1111111111111111111111111111111111111111111111111111111111111111111", true));
-            items.add(new Item("Item 2", false));
-            items.add(new Item("Item 3", false));
-            items.add(new Item("Item 4", false));
-            items.add(new Item("Item 5", false));
-            items.add(new Item("Item 6", true));
-            items.add(new Item("Item 7", false));
-            items.add(new Item("Item 8", false));
-            items.add(new Item("Item 9", false));
-            items.add(new Item("Item 10", false));
+            items.add(new Item("Item 1111111111111111111111111111111111111111111111111111111111111111111", 1, true));
+            items.add(new Item("Item 2", 1, false));
+            items.add(new Item("Item 3", 1, false));
+            items.add(new Item("Item 4", 1, false));
+            items.add(new Item("Item 5", 1, false));
+            items.add(new Item("Item 6", 1, true));
+            items.add(new Item("Item 7", 1, false));
+            items.add(new Item("Item 8", 1, false));
+            items.add(new Item("Item 9", 1, false));
+            items.add(new Item("Item 10", 1, false));
         }
 
         this.items = items;
