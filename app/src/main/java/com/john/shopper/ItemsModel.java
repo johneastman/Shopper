@@ -113,7 +113,7 @@ public class ItemsModel {
         int incompleteItemsCount = 0;
         for (Item item : ItemsModel.getInstance().getItems()) {
             if (!item.isSection() && !item.isComplete()) {
-                incompleteItemsCount += 1;
+                incompleteItemsCount += item.getQuantity();
             }
         }
         return incompleteItemsCount;

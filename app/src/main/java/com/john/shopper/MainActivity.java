@@ -82,10 +82,11 @@ public class MainActivity extends AppCompatActivity {
 
                         String itemName = editText.getText().toString();
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
+                        int quantity = newItemDialog.getQuantity();
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, 1, ItemTypes.isSection(itemTypeDescriptor));
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
                             mAdapter.notifyDataSetChanged();
                         }
                     }

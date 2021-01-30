@@ -6,14 +6,25 @@
     android:layout_height="wrap_content"
     android:padding="20dp">
 
-    <TextView
-        android:id="@+id/item_name_text_view"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_toStartOf="@id/item_options_layout"
+        android:orientation="vertical"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:textSize="20sp" />
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/item_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/item_quantity_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/item_options_layout"

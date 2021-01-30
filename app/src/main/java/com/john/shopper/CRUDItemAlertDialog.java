@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -48,6 +51,13 @@ public class CRUDItemAlertDialog {
     private Spinner spinner;
     private RadioGroup radioGroup;
 
+    // Widgets for quantity
+    private Button decreaseQuantityButton;
+    private TextView quantityTextView;
+    private Button increaseQuantityButton;
+    private int quantity = 1;
+    private View quantityLinearLayout;
+
     private List<RadioButtonData> radioButtonsDataList;
 
     private int titleResourceId;
@@ -84,6 +94,57 @@ public class CRUDItemAlertDialog {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.add_item_layout, null);
 
+        editText = dialogView.findViewById(R.id.new_item_edit_text);
+        if (item != null) {
+            editText.setText(item.getName());
+        }
+
+        spinner = dialogView.findViewById(R.id.new_item_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_list_item_1, ItemTypes.getItemTypes());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                boolean isItemSection = spinner.getItemAtPosition(position).equals(ItemTypes.SECTION);
+                quantityLinearLayout.setVisibility(isItemSection ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        if (item != null) {
+            int spinnerPosition = adapter.getPosition(item.isSection() ? ItemTypes.SECTION : ItemTypes.ITEM);
+            spinner.setSelection(spinnerPosition);
+        }
+
+        // Quantity
+        quantityLinearLayout = dialogView.findViewById(R.id.quantity_setting);
+        quantityLinearLayout.setVisibility(item != null && item.isSection() ? View.GONE : View.VISIBLE);
+
+        quantityTextView = dialogView.findViewById(R.id.display_quantity);
+        setQuantity(item == null ? this.quantity : item.getQuantity());
+
+        decreaseQuantityButton = dialogView.findViewById(R.id.decrease_qantity);
+        decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setQuantity(--quantity);
+            }
+        });
+
+        increaseQuantityButton = dialogView.findViewById(R.id.increase_quantity);
+        increaseQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setQuantity(++quantity);
+            }
+        });
+
         radioGroup = dialogView.findViewById(R.id.new_item_location_radio_group);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -97,22 +158,6 @@ public class CRUDItemAlertDialog {
             }
         });
         this.addRadioButtons();
-
-        editText = dialogView.findViewById(R.id.new_item_edit_text);
-        if (item != null) {
-            editText.setText(item.getName());
-        }
-
-        spinner = dialogView.findViewById(R.id.new_item_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_list_item_1, ItemTypes.getItemTypes());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        if (item != null) {
-            int spinnerPosition = adapter.getPosition(item.isSection() ? ItemTypes.SECTION : ItemTypes.ITEM);
-            spinner.setSelection(spinnerPosition);
-        }
 
         builder.setTitle(this.titleResourceId);
 
@@ -134,6 +179,11 @@ public class CRUDItemAlertDialog {
         return this.spinner;
     }
 
+    public int getQuantity()
+    {
+        return this.quantity;
+    }
+
     public int getNewItemPosition() {
         return this.newItemPosition;
     }
@@ -150,5 +200,11 @@ public class CRUDItemAlertDialog {
 
             radioGroup.addView(rb);
         }
+    }
+
+    private void setQuantity(int quantity)
+    {
+        this.quantity = quantity;
+        quantityTextView.setText(String.valueOf(this.quantity));
     }
 }

@@ -61,10 +61,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         String newName = editText.getText().toString();
                         String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+                        int quantity = editItemDialog.getQuantity();
 
                         int newPosition = editItemDialog.getNewItemPosition();
                         ItemsModel.getInstance().remove(position);
-                        ItemsModel.getInstance().addItem(newPosition, newName, 1, ItemTypes.isSection(newItemTypeDescriptor));
+                        ItemsModel.getInstance().addItem(newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
                         notifyDataSetChanged();
                     }
                 });
@@ -95,10 +96,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         String itemName = editText.getText().toString();
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
+                        int quantity = newItemDialog.getQuantity();
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, 1, ItemTypes.isSection(itemTypeDescriptor));
+                            ItemsModel.getInstance().addItem(newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
                             notifyDataSetChanged();
                         }
                     }
@@ -111,22 +113,49 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
-        // Change sections to have different background color
+        String quantityString = mContext.getString(R.string.quantity_item_row_display, item.getQuantity());
+
+        /* Display differences between sections and items
+         *  1. The background color: Sections=Gray; Items=Default (White)
+         *  2. A Button to add items to a section is present on Sections, while such a button is
+         *     not present on items.
+         *  3. Items display the quantity, while sections do not.
+         */
         if (item.isSection()) {
+            // Background color
             holder.itemView.setBackgroundColor(Color.GRAY);
+
+            // Add item to section button
             holder.sectionAddItemButton.setVisibility(View.VISIBLE);
+
+            // Do not display quantity for sections
+            holder.itemQuantityTextView.setVisibility(View.GONE);
+
         } else {
+            // Background color
             holder.itemView.setBackgroundColor(0);
-            holder.sectionAddItemButton.setVisibility(View.INVISIBLE);
+
+            // Add item to section button
+            holder.sectionAddItemButton.setVisibility(View.GONE);
+
+            // Display quantity for items
+            holder.itemQuantityTextView.setText(quantityString);
+            holder.itemQuantityTextView.setVisibility(View.VISIBLE);
+
+
         }
 
         // Cross out completed items
         if (item.isComplete()) {
             holder.itemNameTextView.setPaintFlags(holder.itemNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.itemNameTextView.setTypeface(null, Typeface.NORMAL);
+
+            holder.itemQuantityTextView.setPaintFlags(holder.itemNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             holder.itemNameTextView.setPaintFlags(0);
             holder.itemNameTextView.setTypeface(null, Typeface.BOLD);
+
+            holder.itemQuantityTextView.setPaintFlags(0);
         }
     }
 
@@ -154,12 +183,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView itemNameTextView;
+        TextView itemQuantityTextView;
         ImageButton editItemButton;
         ImageButton sectionAddItemButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             itemNameTextView = itemView.findViewById(R.id.item_name_text_view);
+            itemQuantityTextView = itemView.findViewById(R.id.item_quantity_text_view);
             editItemButton = itemView.findViewById(R.id.edit_item_button);
             sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
 

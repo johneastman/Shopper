@@ -15,6 +15,12 @@
     <string name="new_item_bottom_of_list">Bottom of List</string>
     <string name="new_item_at_current_position">At Current Position</string>
 
+    <!-- quantity -->
+    <string name="quantity_label">Quantity</string>
+    <string name="increase_quantity_text">+</string>
+    <string name="decrease_quantity_text">-</string>
+    <string name="quantity_item_row_display">Quantity: %1$d</string>
+
     <!-- actionBar subtitle -->
     <plurals name="incompleted_items_count">
         <item quantity="one">%d item</item>
