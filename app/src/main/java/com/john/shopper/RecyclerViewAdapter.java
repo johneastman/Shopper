@@ -141,8 +141,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             // Display quantity for items
             holder.itemQuantityTextView.setText(quantityString);
             holder.itemQuantityTextView.setVisibility(View.VISIBLE);
-
-
         }
 
         // Cross out completed items
