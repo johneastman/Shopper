@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +25,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private LayoutInflater mInflater;
     private Context mContext;
     private String listName;
+    private List<Item> items;
 
     // data is passed into the constructor
-    RecyclerViewAdapter(Context context, String listName) {
+    RecyclerViewAdapter(Context context, String listName, List<Item> items) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
         this.listName = listName;
+        this.items = items;
+        Log.e("LIST_NAME", listName);
+        Log.e("LIST_NAME", String.valueOf(items.size()));
     }
 
     // inflates the row layout from xml when needed
@@ -42,40 +47,40 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final Item item = ItemsModel.getInstance().getItem(listName, position);
+        final Item item = items.get(position);
         holder.itemNameTextView.setText(item.getName());
 
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize() - 1, false));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
-
-                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
-
-                editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        EditText editText = editItemDialog.getEditText();
-                        Spinner spinner = editItemDialog.getSpinner();
-
-                        String newName = editText.getText().toString();
-                        String newItemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = editItemDialog.getQuantity();
-
-                        int newPosition = editItemDialog.getNewItemPosition();
-                        ItemsModel.getInstance().remove(position);
-                        ItemsModel.getInstance().addItem(listName, newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
-                        notifyDataSetChanged();
-                    }
-                });
-                editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                editItemDialog.setTitle(R.string.update_item_title);
-
-                Dialog dialog = editItemDialog.getDialog(item);
-                dialog.show();
+//                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
+//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize() - 1, false));
+//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
+//
+//                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+//
+//                editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        EditText editText = editItemDialog.getEditText();
+//                        Spinner spinner = editItemDialog.getSpinner();
+//
+//                        String newName = editText.getText().toString();
+//                        String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+//                        int quantity = editItemDialog.getQuantity();
+//
+//                        int newPosition = editItemDialog.getNewItemPosition();
+//                        ItemsModel.getInstance().remove(position);
+//                        ItemsModel.getInstance().addItem(listName, newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
+//                        notifyDataSetChanged();
+//                    }
+//                });
+//                editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+//                editItemDialog.setTitle(R.string.update_item_title);
+//
+//                Dialog dialog = editItemDialog.getDialog(item);
+//                dialog.show();
             }
         });
 
@@ -83,35 +88,35 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
 
-                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(listName, position + 1);
-
-                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
-
-                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
-                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        EditText editText = newItemDialog.getEditText();
-                        Spinner spinner = newItemDialog.getSpinner();
-
-                        String itemName = editText.getText().toString();
-                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = newItemDialog.getQuantity();
-
-                        if (itemName.length() > 0) {
-                            int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(listName, newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
-                            notifyDataSetChanged();
-                        }
-                    }
-                });
-                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                newItemDialog.setTitle(R.string.new_item_title);
-
-                Dialog dialog = newItemDialog.getDialog(null);
-                dialog.show();
+//                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(listName, position + 1);
+//
+//                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
+//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
+//
+//                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+//                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        EditText editText = newItemDialog.getEditText();
+//                        Spinner spinner = newItemDialog.getSpinner();
+//
+//                        String itemName = editText.getText().toString();
+//                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
+//                        int quantity = newItemDialog.getQuantity();
+//
+//                        if (itemName.length() > 0) {
+//                            int newItemPosition = newItemDialog.getNewItemPosition();
+//                            ItemsModel.getInstance().addItem(listName, newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
+//                            notifyDataSetChanged();
+//                        }
+//                    }
+//                });
+//                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+//                newItemDialog.setTitle(R.string.new_item_title);
+//
+//                Dialog dialog = newItemDialog.getDialog(null);
+//                dialog.show();
             }
         });
 
@@ -162,12 +167,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // total number of rows
     @Override
     public int getItemCount() {
-        return ItemsModel.getInstance().getSize();
+        return items.size();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        ItemsModel.getInstance().swap(oldPosition, newPosition);
+        ItemsModel.getInstance(mContext).swap(oldPosition, newPosition);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
@@ -175,7 +180,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onViewSwiped(int position) {
-        ItemsModel.getInstance().remove(position);
+        ItemsModel.getInstance(mContext).remove(position);
         notifyItemRemoved(position);
         notifyDataSetChanged();
     }
@@ -200,7 +205,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void onClick(View view) {
             int itemIndex = getAdapterPosition();
-            Item selectedItem = ItemsModel.getInstance().getItem(listName, itemIndex);
+            Item selectedItem = items.get(itemIndex);
 
             // Only allow items to be crossed off
             if (!selectedItem.isSection()) {

@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ItemsModel.getInstance().load(getApplicationContext());
+        ItemsModel.getInstance(getApplicationContext()).load();
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this);

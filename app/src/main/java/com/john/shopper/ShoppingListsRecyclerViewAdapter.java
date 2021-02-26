@@ -36,19 +36,19 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final ShoppingList shoppingList = ItemsModel.getInstance().get(position);
+        final ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(position);
         holder.shoppingListNameTextView.setText(shoppingList.getName());
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return ItemsModel.getInstance().getSize();
+        return ItemsModel.getInstance(mContext).getSize();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        ItemsModel.getInstance().swap(oldPosition, newPosition);
+        ItemsModel.getInstance(mContext).swap(oldPosition, newPosition);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
@@ -56,7 +56,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     @Override
     public void onViewSwiped(int position) {
-        ItemsModel.getInstance().remove(position);
+        ItemsModel.getInstance(mContext).remove(position);
         notifyItemRemoved(position);
         notifyDataSetChanged();
     }
@@ -77,15 +77,10 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
             int itemsPosition = getLayoutPosition();
 
-            ShoppingList shoppingList = ItemsModel.getInstance().get(itemsPosition);
-
-            ArrayList<Item> items = (ArrayList<Item>) shoppingList.getItems();
+            ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(itemsPosition);
 
             Intent intent = new Intent(mContext, ItemsActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString(CommonData.LIST_NAME, shoppingList.getName());
-            bundle.putParcelableArrayList(CommonData.ITEMS, items);
-            intent.putExtras(bundle);
+            intent.putExtra(CommonData.LIST_NAME, shoppingList.getName());
             mContext.startActivity(intent);
         }
     }
