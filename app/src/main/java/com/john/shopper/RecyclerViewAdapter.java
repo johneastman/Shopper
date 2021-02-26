@@ -23,11 +23,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private LayoutInflater mInflater;
     private Context mContext;
+    private String listName;
 
     // data is passed into the constructor
-    RecyclerViewAdapter(Context context) {
+    RecyclerViewAdapter(Context context, String listName) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
+        this.listName = listName;
     }
 
     // inflates the row layout from xml when needed
@@ -40,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final Item item = ItemsModel.getInstance().get(position);
+        final Item item = ItemsModel.getInstance().getItem(listName, position);
         holder.itemNameTextView.setText(item.getName());
 
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +67,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         int newPosition = editItemDialog.getNewItemPosition();
                         ItemsModel.getInstance().remove(position);
-                        ItemsModel.getInstance().addItem(newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
+                        ItemsModel.getInstance().addItem(listName, newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
                         notifyDataSetChanged();
                     }
                 });
@@ -81,7 +83,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
 
-                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(position + 1);
+                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(listName, position + 1);
 
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
@@ -100,7 +102,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
+                            ItemsModel.getInstance().addItem(listName, newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
                             notifyDataSetChanged();
                         }
                     }
@@ -198,7 +200,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void onClick(View view) {
             int itemIndex = getAdapterPosition();
-            Item selectedItem = ItemsModel.getInstance().get(itemIndex);
+            Item selectedItem = ItemsModel.getInstance().getItem(listName, itemIndex);
 
             // Only allow items to be crossed off
             if (!selectedItem.isSection()) {
