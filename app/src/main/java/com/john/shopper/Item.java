@@ -5,17 +5,21 @@ import android.os.Parcelable;
 
 public class Item implements Parcelable {
 
+    private long id;
     private String name;
+    private int quantity;
     private boolean isSection;
     private boolean isComplete;
-    private int quantity;
+    private int position;
 
-    public Item(String name, int quantity, boolean isSection) {
+
+    public Item(long id, String name, int quantity, boolean isSection, boolean isComplete, int position) {
+        this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.isSection = isSection;
-
-        this.isComplete = false;
+        this.position = position;
+        this.isComplete = isComplete;
     }
 
     public Item(Parcel in) {
@@ -43,6 +47,14 @@ public class Item implements Parcelable {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public int getPosition() {
+        return this.position;
     }
 
     public void setQuantity(int quantity) {

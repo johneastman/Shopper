@@ -1,8 +1,5 @@
 package com.john.shopper;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 public final class ItemContract {
@@ -19,5 +16,6 @@ public final class ItemContract {
         public static final String COLUMN_QUANTITY = "quantity";
         public static final String COLUMN_IS_COMPLETE = "is_complete";
         public static final String COLUMN_IS_SECTION = "is_section";
+        public static final String COLUMN_POSITION = "position";
     }
 }

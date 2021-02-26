@@ -48,75 +48,82 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Item item = items.get(position);
-        holder.itemNameTextView.setText(item.getName());
+        holder.itemNameTextView.setText(item.getName() + " " + item.getPosition());
 
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
-//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize() - 1, false));
-//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
-//
-//                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
-//
-//                editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        EditText editText = editItemDialog.getEditText();
-//                        Spinner spinner = editItemDialog.getSpinner();
-//
-//                        String newName = editText.getText().toString();
-//                        String newItemTypeDescriptor = spinner.getSelectedItem().toString();
-//                        int quantity = editItemDialog.getQuantity();
-//
-//                        int newPosition = editItemDialog.getNewItemPosition();
-//                        ItemsModel.getInstance().remove(position);
-//                        ItemsModel.getInstance().addItem(listName, newPosition, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor));
-//                        notifyDataSetChanged();
-//                    }
-//                });
-//                editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-//                editItemDialog.setTitle(R.string.update_item_title);
-//
-//                Dialog dialog = editItemDialog.getDialog(item);
-//                dialog.show();
+                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance(mContext).getSize() - 1, false));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
+
+                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+
+                editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Item oldItem = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
+                        long itemId = oldItem.getId();
+
+                        EditText editText = editItemDialog.getEditText();
+                        Spinner spinner = editItemDialog.getSpinner();
+
+                        String newName = editText.getText().toString();
+                        String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+                        int quantity = editItemDialog.getQuantity();
+
+                        int newPosition = editItemDialog.getNewItemPosition();
+
+                        Item item = new Item(oldItem.getId(), newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), oldItem.isComplete(), newPosition);
+                        ItemsModel.getInstance(mContext).updateItems(item);
+
+                        // ItemsModel.getInstance(mContext).remove(listName, itemId);
+                        // ItemsModel.getInstance(mContext).addItem(listName, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), newPosition);
+                        notifyAdapterDatasetChanged();
+                    }
+                });
+                editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+                editItemDialog.setTitle(R.string.update_item_title);
+
+                Dialog dialog = editItemDialog.getDialog(item);
+                dialog.show();
             }
         });
 
         holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int bottomOfSectionPosition = ItemsModel.getInstance(mContext).getEndOfSectionPosition(listName, position + 1);
 
-//                int bottomOfSectionPosition = ItemsModel.getInstance().getEndOfSectionPosition(listName, position + 1);
-//
-//                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
-//                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
-//
-//                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
-//                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        EditText editText = newItemDialog.getEditText();
-//                        Spinner spinner = newItemDialog.getSpinner();
-//
-//                        String itemName = editText.getText().toString();
-//                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-//                        int quantity = newItemDialog.getQuantity();
-//
-//                        if (itemName.length() > 0) {
-//                            int newItemPosition = newItemDialog.getNewItemPosition();
-//                            ItemsModel.getInstance().addItem(listName, newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
-//                            notifyDataSetChanged();
-//                        }
-//                    }
-//                });
-//                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-//                newItemDialog.setTitle(R.string.new_item_title);
-//
-//                Dialog dialog = newItemDialog.getDialog(null);
-//                dialog.show();
+                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
+
+                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        EditText editText = newItemDialog.getEditText();
+                        Spinner spinner = newItemDialog.getSpinner();
+
+                        String itemName = editText.getText().toString();
+                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
+                        int quantity = newItemDialog.getQuantity();
+
+                        if (itemName.length() > 0) {
+                            int newItemPosition = newItemDialog.getNewItemPosition();
+                            ItemsModel.getInstance(mContext).addItem(listName, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
+                            notifyAdapterDatasetChanged();
+                        }
+                    }
+                });
+                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+                newItemDialog.setTitle(R.string.new_item_title);
+
+                Dialog dialog = newItemDialog.getDialog(null);
+                dialog.show();
             }
         });
 
@@ -164,6 +171,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
+    public void notifyAdapterDatasetChanged() {
+        items = ItemsModel.getInstance(mContext).getItemsByList(listName);
+        notifyDataSetChanged();
+    }
+
     // total number of rows
     @Override
     public int getItemCount() {
@@ -173,17 +185,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
         ItemsModel.getInstance(mContext).swap(oldPosition, newPosition);
-
-        notifyItemChanged(oldPosition);
-        notifyItemMoved(oldPosition, newPosition);
+        notifyAdapterDatasetChanged();
+        // notifyItemChanged(oldPosition);
+        // notifyItemMoved(oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        ItemsModel.getInstance(mContext).remove(position);
-        notifyItemRemoved(position);
-        notifyDataSetChanged();
+
+        Item item = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
+
+        ItemsModel.getInstance(mContext).remove(listName, item.getId());
+        notifyAdapterDatasetChanged();
+        // notifyItemRemoved(position);
+        // notifyDataSetChanged();
     }
+
+
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -212,8 +230,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 boolean newStatus = !selectedItem.isComplete();
                 selectedItem.setComplete(newStatus);
             }
-
-            notifyDataSetChanged();
+            ItemsModel.getInstance(mContext).updateItems(selectedItem);
+            notifyAdapterDatasetChanged();
         }
     }
 }

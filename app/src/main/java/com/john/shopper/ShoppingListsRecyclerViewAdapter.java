@@ -56,7 +56,8 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     @Override
     public void onViewSwiped(int position) {
-        ItemsModel.getInstance(mContext).remove(position);
+        ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(position);
+        ItemsModel.getInstance(mContext).remove(shoppingList.getName(), position);
         notifyItemRemoved(position);
         notifyDataSetChanged();
     }
