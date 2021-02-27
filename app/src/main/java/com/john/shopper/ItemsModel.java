@@ -42,8 +42,10 @@ public class ItemsModel {
         this.context = context;
         this.dbHelper = new ItemsDbHelper(context);
         this.db = dbHelper.getWritableDatabase();
+    }
 
-        items = getShoppingLists();
+    public void addShoppingList(ShoppingList shoppingList) {
+        this.items.add(shoppingList);
     }
 
     public ShoppingList getShoppingList(int position)
@@ -61,15 +63,16 @@ public class ItemsModel {
      * @param id
      */
     public int remove(String listName, long id) {
-        // Define 'where' part of query.
-        String selection = ItemContract.ItemEntry.COLUMN_LIST_NAME + " LIKE ? AND " +
-                ItemContract.ItemEntry._ID + " = ?";
-        // Specify arguments in placeholder order.
-        String[] selectionArgs = { listName, String.valueOf(id) };
-        // Issue SQL statement.
-        int numRemoved = db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
-        Log.e("NUM_REMOVED", String.valueOf(numRemoved));
-        return numRemoved;
+//        // Define 'where' part of query.
+//        String selection = ItemContract.ItemEntry.COLUMN_LIST_NAME + " LIKE ? AND " +
+//                ItemContract.ItemEntry._ID + " = ?";
+//        // Specify arguments in placeholder order.
+//        String[] selectionArgs = { listName, String.valueOf(id) };
+//        // Issue SQL statement.
+//        int numRemoved = db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
+//        Log.e("NUM_REMOVED", String.valueOf(numRemoved));
+//        return numRemoved;
+        return 0;
     }
 
     public long updateItems(Item item) {
@@ -97,11 +100,11 @@ public class ItemsModel {
         return this.items.size();
     }
 
-    public long addItem(String listName, String itemName, int quantity, boolean isSection, int position)
+    public long addItem(long listId, String itemName, int quantity, boolean isSection, int position)
     {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(ItemContract.ItemEntry.COLUMN_LIST_NAME, listName);
+        values.put(ItemContract.ItemEntry.COLUMN_LIST_ID, listId);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, itemName);
         values.put(ItemContract.ItemEntry.COLUMN_QUANTITY, quantity);
         values.put(ItemContract.ItemEntry.COLUMN_IS_SECTION, isSection ? 1 : 0);
@@ -111,18 +114,31 @@ public class ItemsModel {
         return db.insert(ItemContract.ItemEntry.TABLE_NAME, null, values);
     }
 
+    /**
+     * Insert a row into the Shopping Lists table
+     *
+     * @param listName The name of the shopping list
+     * @return the primary key of the shopping list row
+     */
+    public long insertShoppingList(String listName) {
+        ContentValues values = new ContentValues();
+        values.put(ItemContract.ShoppingListEntry.COLUMN_NAME, listName);
+
+        return db.insert(ItemContract.ShoppingListEntry.TABLE_NAME, null, values);
+    }
+
     public List<ShoppingList> getShoppingLists() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                ItemContract.ItemEntry.COLUMN_LIST_NAME
+                ItemContract.ShoppingListEntry._ID,
+                ItemContract.ShoppingListEntry.COLUMN_NAME
         };
 
         Cursor cursor = db.query(
-                true,
-                ItemContract.ItemEntry.TABLE_NAME,   // The table to query
+                ItemContract.ShoppingListEntry.TABLE_NAME,   // The table to query
                 projection,             // The array of columns to return (pass null to get all)
                 null,              // The columns for the WHERE clause
                 null,          // The values for the WHERE clause
@@ -134,8 +150,10 @@ public class ItemsModel {
 
         List<ShoppingList> shoppingLists = new ArrayList<>();
         while(cursor.moveToNext()) {
-            String listName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_LIST_NAME));
-            ShoppingList shoppingList = new ShoppingList(listName, new ArrayList<Item>());
+            long listId = cursor.getLong(cursor.getColumnIndexOrThrow(ItemContract.ShoppingListEntry._ID));
+            String listName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ShoppingListEntry.COLUMN_NAME));
+
+            ShoppingList shoppingList = new ShoppingList(listId, listName);
             shoppingLists.add(shoppingList);
         }
         cursor.close();
@@ -144,90 +162,86 @@ public class ItemsModel {
 
     public List<Item> getItemsByList(String listName)
     {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                ItemContract.ItemEntry._ID,
-                ItemContract.ItemEntry.COLUMN_ITEM_NAME,
-                ItemContract.ItemEntry.COLUMN_QUANTITY,
-                ItemContract.ItemEntry.COLUMN_IS_SECTION,
-                ItemContract.ItemEntry.COLUMN_IS_COMPLETE,
-                ItemContract.ItemEntry.COLUMN_POSITION
-        };
-
-        String selection = ItemContract.ItemEntry.COLUMN_LIST_NAME + " = ?";
-        String[] selectionArgs = { listName };
-
-        String orderBy = ItemContract.ItemEntry.COLUMN_POSITION + " DESC";
-
-
-        Cursor cursor = db.query(
-                true,
-                ItemContract.ItemEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,
-                null,
-                orderBy,
-                null
-        );
-
-        List<Item> items = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            long itemId = cursor.getLong(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry._ID));
-            String itemName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_ITEM_NAME));
-            int itemQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_QUANTITY));
-            int itemIsSection = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_IS_SECTION));
-            int itemIsComplete = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_IS_COMPLETE));
-            int itemPosition = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_POSITION));
-
-            Item item = new Item(itemId, itemName, itemQuantity, itemIsSection == 1, itemIsComplete == 1, itemPosition);
-            items.add(item);
-        }
-        cursor.close();
-        return items;
-    }
-
-    public void load() {
-        addItem("Price Chopper", "Beef", 1, false, 0);
-        addItem("Price Chopper", "Celery", 3, false, 1);
-        addItem("CVS", "Chapstick", 1, false, 0);
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//
+//        // Define a projection that specifies which columns from the database
+//        // you will actually use after this query.
+//        String[] projection = {
+//                ItemContract.ItemEntry._ID,
+//                ItemContract.ItemEntry.COLUMN_ITEM_NAME,
+//                ItemContract.ItemEntry.COLUMN_QUANTITY,
+//                ItemContract.ItemEntry.COLUMN_IS_SECTION,
+//                ItemContract.ItemEntry.COLUMN_IS_COMPLETE,
+//                ItemContract.ItemEntry.COLUMN_POSITION
+//        };
+//
+//        String selection = ItemContract.ItemEntry.COLUMN_LIST_NAME + " = ?";
+//        String[] selectionArgs = { listName };
+//
+//        String orderBy = ItemContract.ItemEntry.COLUMN_POSITION + " DESC";
+//
+//
+//        Cursor cursor = db.query(
+//                true,
+//                ItemContract.ItemEntry.TABLE_NAME,   // The table to query
+//                projection,             // The array of columns to return (pass null to get all)
+//                selection,              // The columns for the WHERE clause
+//                selectionArgs,          // The values for the WHERE clause
+//                null,
+//                null,
+//                orderBy,
+//                null
+//        );
+//
+//        List<Item> items = new ArrayList<>();
+//        while(cursor.moveToNext()) {
+//            long itemId = cursor.getLong(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry._ID));
+//            String itemName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_ITEM_NAME));
+//            int itemQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_QUANTITY));
+//            int itemIsSection = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_IS_SECTION));
+//            int itemIsComplete = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_IS_COMPLETE));
+//            int itemPosition = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_POSITION));
+//
+//            Item item = new Item(itemId, itemName, itemQuantity, itemIsSection == 1, itemIsComplete == 1, itemPosition);
+//            items.add(item);
+//        }
+//        cursor.close();
+//        return items;
+        return null;
     }
 
     public long getNumberOfIncompleteItems(String listName) {
-
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String rawQuery = new StringBuilder()
-                .append("SELECT SUM(")
-                .append(ItemContract.ItemEntry.COLUMN_QUANTITY)
-                .append(") AS TOTAL FROM ")
-                .append(ItemContract.ItemEntry.TABLE_NAME)
-                .append(" WHERE ")
-                .append(ItemContract.ItemEntry.COLUMN_LIST_NAME)
-                .append(" = ? AND ")
-                .append(ItemContract.ItemEntry.COLUMN_IS_SECTION)
-                .append(" = ? AND ")
-                .append(ItemContract.ItemEntry.COLUMN_IS_COMPLETE)
-                .append(" = ?")
-                .toString();
-
-        Cursor cursor = db.rawQuery(rawQuery, new String[] { listName, "0", "0" });
-
-        int numIncompleteItems;
-        // return DatabaseUtils.queryNumEntries(db, ItemContract.ItemEntry.TABLE_NAME, section, sectionArgs);
-        if (cursor.moveToFirst())
-        {
-            numIncompleteItems = cursor.getInt(cursor.getColumnIndex("TOTAL"));
-        } else
-        {
-            numIncompleteItems = -1;
-        }
-        cursor.close();
-        return numIncompleteItems;
+//
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//
+//        String rawQuery = new StringBuilder()
+//                .append("SELECT SUM(")
+//                .append(ItemContract.ItemEntry.COLUMN_QUANTITY)
+//                .append(") AS TOTAL FROM ")
+//                .append(ItemContract.ItemEntry.TABLE_NAME)
+//                .append(" WHERE ")
+//                .append(ItemContract.ItemEntry.COLUMN_LIST_NAME)
+//                .append(" = ? AND ")
+//                .append(ItemContract.ItemEntry.COLUMN_IS_SECTION)
+//                .append(" = ? AND ")
+//                .append(ItemContract.ItemEntry.COLUMN_IS_COMPLETE)
+//                .append(" = ?")
+//                .toString();
+//
+//        Cursor cursor = db.rawQuery(rawQuery, new String[] { listName, "0", "0" });
+//
+//        int numIncompleteItems;
+//        // return DatabaseUtils.queryNumEntries(db, ItemContract.ItemEntry.TABLE_NAME, section, sectionArgs);
+//        if (cursor.moveToFirst())
+//        {
+//            numIncompleteItems = cursor.getInt(cursor.getColumnIndex("TOTAL"));
+//        } else
+//        {
+//            numIncompleteItems = -1;
+//        }
+//        cursor.close();
+//        return numIncompleteItems;
+        return 0;
     }
 
     public int getEndOfSectionPosition(String listName, int position) {

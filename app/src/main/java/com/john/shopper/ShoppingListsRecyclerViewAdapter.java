@@ -2,17 +2,14 @@ package com.john.shopper;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListsRecyclerViewAdapter.ViewHolder> implements ItemMoveCallback.ActionCompletionContract {
@@ -20,10 +17,14 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     private LayoutInflater mInflater;
     private Context mContext;
 
+    List<ShoppingList> items;
+
     // data is passed into the constructor
-    ShoppingListsRecyclerViewAdapter(Context context) {
+    ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
+
+        this.items = items;
     }
 
     // inflates the row layout from xml when needed
@@ -36,19 +37,19 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(position);
-        holder.shoppingListNameTextView.setText(shoppingList.getName());
+        ShoppingList shoppingList = this.items.get(position);
+        holder.shoppingListNameTextView.setText(shoppingList.getName() + shoppingList.getListId());
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return ItemsModel.getInstance(mContext).getSize();
+        return this.items.size();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        ItemsModel.getInstance(mContext).swap(oldPosition, newPosition);
+        Collections.swap(items, oldPosition, newPosition);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
@@ -56,8 +57,8 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     @Override
     public void onViewSwiped(int position) {
-        ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(position);
-        ItemsModel.getInstance(mContext).remove(shoppingList.getName(), position);
+        this.items.remove(position);
+
         notifyItemRemoved(position);
         notifyDataSetChanged();
     }
@@ -75,13 +76,11 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
         @Override
         public void onClick(View view) {
-
-            int itemsPosition = getLayoutPosition();
-
-            ShoppingList shoppingList = ItemsModel.getInstance(mContext).getShoppingList(itemsPosition);
+            int position = getLayoutPosition();
+            ShoppingList shoppingList = items.get(position);
 
             Intent intent = new Intent(mContext, ItemsActivity.class);
-            intent.putExtra(CommonData.LIST_NAME, shoppingList.getName());
+            intent.putExtra(CommonData.LIST_ID, shoppingList.getListId());
             mContext.startActivity(intent);
         }
     }

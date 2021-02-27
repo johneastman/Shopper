@@ -24,16 +24,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private LayoutInflater mInflater;
     private Context mContext;
-    private String listName;
+    private long listId;
     private List<Item> items;
 
     // data is passed into the constructor
-    RecyclerViewAdapter(Context context, String listName, List<Item> items) {
+    RecyclerViewAdapter(Context context, long listId, List<Item> items) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-        this.listName = listName;
+        this.listId = listId;
         this.items = items;
-        Log.e("LIST_NAME", listName);
+        Log.e("LIST_NAME", String.valueOf(listId));
         Log.e("LIST_NAME", String.valueOf(items.size()));
     }
 
@@ -64,8 +64,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        Item oldItem = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
-                        long itemId = oldItem.getId();
+                        // Item oldItem = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
+                        // long itemId = oldItem.getId();
 
                         EditText editText = editItemDialog.getEditText();
                         Spinner spinner = editItemDialog.getSpinner();
@@ -76,8 +76,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         int newPosition = editItemDialog.getNewItemPosition();
 
-                        Item item = new Item(oldItem.getId(), newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), oldItem.isComplete(), newPosition);
-                        ItemsModel.getInstance(mContext).updateItems(item);
+                        // Item item = new Item(oldItem.getId(), newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), oldItem.isComplete(), newPosition);
+                        // ItemsModel.getInstance(mContext).updateItems(item);
 
                         // ItemsModel.getInstance(mContext).remove(listName, itemId);
                         // ItemsModel.getInstance(mContext).addItem(listName, newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), newPosition);
@@ -95,10 +95,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int bottomOfSectionPosition = ItemsModel.getInstance(mContext).getEndOfSectionPosition(listName, position + 1);
+                // int bottomOfSectionPosition = ItemsModel.getInstance(mContext).getEndOfSectionPosition(listName, position + 1);
 
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
+                // radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
 
                 final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
@@ -114,7 +114,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance(mContext).addItem(listName, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
+                            ItemsModel.getInstance(mContext).addItem(1L, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
                             notifyAdapterDatasetChanged();
                         }
                     }
@@ -172,7 +172,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public void notifyAdapterDatasetChanged() {
-        items = ItemsModel.getInstance(mContext).getItemsByList(listName);
+        // items = ItemsModel.getInstance(mContext).getItemsByList(listName);
         notifyDataSetChanged();
     }
 
@@ -193,9 +193,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onViewSwiped(int position) {
 
-        Item item = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
+        // Item item = ItemsModel.getInstance(mContext).getItemsByList(listName).get(position);
 
-        ItemsModel.getInstance(mContext).remove(listName, item.getId());
+        // ItemsModel.getInstance(mContext).remove(listName, item.getId());
         notifyAdapterDatasetChanged();
         // notifyItemRemoved(position);
         // notifyDataSetChanged();

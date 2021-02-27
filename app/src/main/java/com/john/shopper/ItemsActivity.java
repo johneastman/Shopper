@@ -27,7 +27,7 @@ public class ItemsActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerViewAdapter mAdapter;
 
-    String itemsListName;
+    long listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +35,12 @@ public class ItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_items);
 
         Bundle bundle = getIntent().getExtras();
-        itemsListName = bundle.getString(CommonData.LIST_NAME);
+        listId = bundle.getLong(CommonData.LIST_ID);
 
-        items = ItemsModel.getInstance(getApplicationContext()).getItemsByList(itemsListName);
+        items = new ArrayList<Item>(); // ItemsModel.getInstance(getApplicationContext()).getItemsByList(itemsListName);
 
         recyclerView = findViewById(R.id.recycler_view);
-        mAdapter = new RecyclerViewAdapter(ItemsActivity.this, itemsListName, items);
+        mAdapter = new RecyclerViewAdapter(ItemsActivity.this, listId, items);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -91,7 +91,7 @@ public class ItemsActivity extends AppCompatActivity {
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance(getApplicationContext()).addItem(itemsListName, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
+                            ItemsModel.getInstance(getApplicationContext()).addItem(1L, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
                             mAdapter.notifyAdapterDatasetChanged();
                         }
                     }
@@ -109,7 +109,7 @@ public class ItemsActivity extends AppCompatActivity {
 
     private void setActionBarSubTitle() {
 
-        int incompleteItemsCount = (int) ItemsModel.getInstance(getApplicationContext()).getNumberOfIncompleteItems(itemsListName);
+        int incompleteItemsCount = 0; // (int) ItemsModel.getInstance(getApplicationContext()).getNumberOfIncompleteItems(itemsListName);
         Resources res = getResources();
         String itemsSubTitleText = res.getQuantityString(
                 R.plurals.incompleted_items_count,
