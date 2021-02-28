@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                builder.setTitle("Add a New Shopping List");
+                builder.setTitle(R.string.new_shopping_list_title);
 
                 Dialog dialog = builder.create();
                 dialog.show();

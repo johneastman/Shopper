@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Shopper</string>
 
+    <!-- new shopping lists -->
+    <string name="new_shopping_list_title">Add a New Shopping List</string>
+
     <!-- menu items -->
     <string name="new_item_menu_title">Add New Item</string>
 
