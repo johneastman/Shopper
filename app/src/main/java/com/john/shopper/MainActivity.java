@@ -21,6 +21,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    ItemsModel itemsModel;
+
     RecyclerView recyclerView;
     ShoppingListsRecyclerViewAdapter mAdapter;
 
@@ -31,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        shoppingLists = ItemsModel.getInstance(getApplicationContext()).getShoppingLists();
+        itemsModel = new ItemsModel(getApplicationContext());
+
+        shoppingLists = itemsModel.getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
@@ -74,12 +78,12 @@ public class MainActivity extends AppCompatActivity {
                                 EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
                                 String shoppingListName = editText.getText().toString();
 
-                                ItemsModel.getInstance(getApplicationContext()).insertShoppingList(shoppingListName);
-
-                                shoppingLists.clear();
-                                shoppingLists.addAll(ItemsModel.getInstance(getApplicationContext()).getShoppingLists());
-
-                                mAdapter.notifyDataSetChanged();
+                                if (shoppingListName.length() > 0) {
+                                    long listID =  itemsModel.insertShoppingList(shoppingListName);
+                                    ShoppingList shoppingList = new ShoppingList(listID, shoppingListName);
+                                    shoppingLists.add(shoppingList);
+                                    mAdapter.notifyDataSetChanged();
+                                }
                             }
                         });
                 builder.setTitle("Add a New Shopping List");

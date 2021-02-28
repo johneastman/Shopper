@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,15 +30,19 @@ public class ItemsActivity extends AppCompatActivity {
 
     long listId;
 
+    ItemsModel itemsModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
+        itemsModel = new ItemsModel(getApplicationContext());
+
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getLong(CommonData.LIST_ID);
 
-        items = new ArrayList<Item>(); // ItemsModel.getInstance(getApplicationContext()).getItemsByList(itemsListName);
+        items = itemsModel.getItemsByListId(listId);
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new RecyclerViewAdapter(ItemsActivity.this, listId, items);
@@ -75,7 +80,7 @@ public class ItemsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.new_item:
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance(getApplicationContext()).getSize(), true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, items.size(), true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
                 final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this, radioButtonsDataList);
@@ -84,15 +89,18 @@ public class ItemsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         EditText editText = newItemDialog.getEditText();
                         Spinner spinner = newItemDialog.getSpinner();
-
                         String itemName = editText.getText().toString();
                         String itemTypeDescriptor = spinner.getSelectedItem().toString();
                         int quantity = newItemDialog.getQuantity();
 
                         if (itemName.length() > 0) {
                             int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance(getApplicationContext()).addItem(1L, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
-                            mAdapter.notifyAdapterDatasetChanged();
+                            long itemId = itemsModel.addItem(listId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
+
+                            Item item = new Item(itemId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), false, newItemPosition);
+
+                            items.add(newItemPosition, item);
+                            mAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -107,9 +115,19 @@ public class ItemsActivity extends AppCompatActivity {
         }
     }
 
-    private void setActionBarSubTitle() {
+    @Override
+    protected void onDestroy() {
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            item.setPosition(i);
 
-        int incompleteItemsCount = 0; // (int) ItemsModel.getInstance(getApplicationContext()).getNumberOfIncompleteItems(itemsListName);
+            itemsModel.updateItem(item);
+        }
+        super.onDestroy();
+    }
+
+    private void setActionBarSubTitle() {
+        int incompleteItemsCount = itemsModel.getNumberOfIncompleteItems(items);
         Resources res = getResources();
         String itemsSubTitleText = res.getQuantityString(
                 R.plurals.incompleted_items_count,

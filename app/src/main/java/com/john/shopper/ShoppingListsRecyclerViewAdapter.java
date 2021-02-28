@@ -17,7 +17,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     private LayoutInflater mInflater;
     private Context mContext;
 
-    List<ShoppingList> items;
+    private List<ShoppingList> items;
 
     // data is passed into the constructor
     ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
@@ -38,7 +38,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         ShoppingList shoppingList = this.items.get(position);
-        holder.shoppingListNameTextView.setText(shoppingList.getName() + shoppingList.getListId());
+        holder.shoppingListNameTextView.setText(shoppingList.getName());
     }
 
     // total number of rows
