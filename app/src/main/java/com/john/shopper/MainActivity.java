@@ -1,6 +1,6 @@
 package com.john.shopper;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -9,37 +9,36 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.Spinner;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    ItemsModel itemsModel;
+
     RecyclerView recyclerView;
-    RecyclerViewAdapter mAdapter;
+    ShoppingListsRecyclerViewAdapter mAdapter;
+
+    List<ShoppingList> shoppingLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ItemsModel.getInstance().load(getApplicationContext());
+        itemsModel = new ItemsModel(getApplicationContext());
+
+        shoppingLists = itemsModel.getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
-        mAdapter = new RecyclerViewAdapter(MainActivity.this);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                setActionBarSubTitle();
-            }
-        });
+        mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
 
         ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -51,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
         // Add dividing lines to cells
         DividerItemDecoration itemDecor = new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
-
-        setActionBarSubTitle();
     }
 
     @Override
@@ -66,64 +63,36 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            // New List Menu
             case R.id.new_item:
 
-                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, ItemsModel.getInstance().getSize(), true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = LayoutInflater.from(this);
+                final View dialogView = inflater.inflate(R.layout.add_shopping_list_dialog, null);
 
+                builder.setView(dialogView);
+                builder.setPositiveButton(
+                        R.string.new_item_add, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
+                                String shoppingListName = editText.getText().toString();
 
-                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this, radioButtonsDataList);
-                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        EditText editText = newItemDialog.getEditText();
-                        Spinner spinner = newItemDialog.getSpinner();
+                                if (shoppingListName.length() > 0) {
+                                    long listID =  itemsModel.insertShoppingList(shoppingListName);
+                                    ShoppingList shoppingList = new ShoppingList(listID, shoppingListName);
+                                    shoppingLists.add(shoppingList);
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        });
+                builder.setTitle("Add a New Shopping List");
 
-                        String itemName = editText.getText().toString();
-                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = newItemDialog.getQuantity();
-
-                        if (itemName.length() > 0) {
-                            int newItemPosition = newItemDialog.getNewItemPosition();
-                            ItemsModel.getInstance().addItem(newItemPosition, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor));
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                newItemDialog.setTitle(R.string.new_item_title);
-
-                Dialog dialog = newItemDialog.getDialog(null);
+                Dialog dialog = builder.create();
                 dialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ItemsModel.getInstance().save(getApplicationContext());
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ItemsModel.getInstance().save(getApplicationContext());
-    }
-
-    private void setActionBarSubTitle() {
-
-        int incompleteItemsCount = ItemsModel.getInstance().getNumberOfIncompleteItems();
-        Resources res = getResources();
-        String itemsSubTitleText = res.getQuantityString(R.plurals.incompleted_items_count,
-                incompleteItemsCount, incompleteItemsCount);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(itemsSubTitleText);
         }
     }
 }
