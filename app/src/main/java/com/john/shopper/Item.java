@@ -1,9 +1,6 @@
 package com.john.shopper;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-public class Item implements Parcelable {
+public class Item implements ItemsInterface {
 
     private long id;
     private String name;
@@ -20,13 +17,6 @@ public class Item implements Parcelable {
         this.isSection = isSection;
         this.position = position;
         this.isComplete = isComplete;
-    }
-
-    public Item(Parcel in) {
-        name = in.readString();
-        isSection = in.readBoolean();
-        isComplete = in.readBoolean();
-        quantity = in.readInt();
     }
 
     public String getName() {
@@ -49,44 +39,28 @@ public class Item implements Parcelable {
         return quantity;
     }
 
-    public long getId() {
+    @Override
+    public long getItemId() {
         return this.id;
     }
 
-    public int getPosition() {
-        return this.position;
+    @Override
+    public String getTableName() {
+        return ItemContract.ItemEntry.TABLE_NAME;
     }
 
+    @Override
+    public String getIdColumn() {
+        return ItemContract.ItemEntry._ID;
+    }
+
+    @Override
     public void setPosition(int position) {
         this.position = position;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     @Override
-    public int describeContents() {
-        return 0;
+    public int getPosition() {
+        return this.position;
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeBoolean(isSection);
-        dest.writeBoolean(isComplete);
-        dest.writeInt(quantity);
-    }
-
-    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>()
-    {
-        public Item createFromParcel(Parcel in)
-        {
-            return new Item(in);
-        }
-        public Item[] newArray(int size)
-        {
-            return new Item[size];
-        }
-    };
 }

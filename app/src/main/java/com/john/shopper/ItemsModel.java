@@ -25,8 +25,11 @@ public class ItemsModel {
         // you will actually use after this query.
         String[] projection = {
                 ItemContract.ShoppingListEntry._ID,
-                ItemContract.ShoppingListEntry.COLUMN_NAME
+                ItemContract.ShoppingListEntry.COLUMN_NAME,
+                ItemContract.ShoppingListEntry.COLUMN_POSITION
         };
+
+        String orderBy = ItemContract.ShoppingListEntry.COLUMN_POSITION + " ASC";
 
         Cursor cursor = db.query(
                 ItemContract.ShoppingListEntry.TABLE_NAME,   // The table to query
@@ -35,7 +38,7 @@ public class ItemsModel {
                 null,          // The values for the WHERE clause
                 null,                   // don't group the rows
                 null,
-                null, // don't filter by row groups
+                orderBy, // don't filter by row groups
                 null               // The sort order
         );
 
@@ -43,8 +46,9 @@ public class ItemsModel {
         while(cursor.moveToNext()) {
             long listId = cursor.getLong(cursor.getColumnIndexOrThrow(ItemContract.ShoppingListEntry._ID));
             String listName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ShoppingListEntry.COLUMN_NAME));
+            int position = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ShoppingListEntry.COLUMN_POSITION));
 
-            ShoppingList shoppingList = new ShoppingList(listId, listName);
+            ShoppingList shoppingList = new ShoppingList(listId, listName, position);
             shoppingLists.add(shoppingList);
         }
         cursor.close();
@@ -133,9 +137,9 @@ public class ItemsModel {
         values.put(ItemContract.ItemEntry.COLUMN_IS_COMPLETE, item.isComplete() ? 1 : 0);
         values.put(ItemContract.ItemEntry.COLUMN_POSITION, item.getPosition());
 
-        // Which row to update, based on the title
+        // Which row to update, based on the id
         String selection = ItemContract.ItemEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(item.getId()) };
+        String[] selectionArgs = { String.valueOf(item.getItemId()) };
 
         return db.update(
                 ItemContract.ItemEntry.TABLE_NAME,
@@ -145,9 +149,32 @@ public class ItemsModel {
         );
     }
 
-    public long deleteItem(Item item) {
-        String selection = ItemContract.ItemEntry._ID + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(item.getId()) };
+    public long updateShoppingList(ShoppingList shoppingList) {
+        ContentValues values = new ContentValues();
+        values.put(ItemContract.ShoppingListEntry.COLUMN_NAME, shoppingList.getName());
+        values.put(ItemContract.ShoppingListEntry.COLUMN_POSITION, shoppingList.getPosition());
+
+        // Which row to update, based on the id
+        String selection = ItemContract.ShoppingListEntry._ID + " = ?";
+        String[] selectionArgs = { String.valueOf(shoppingList.getItemId()) };
+
+        return db.update(
+                ItemContract.ShoppingListEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs
+        );
+    }
+
+    public long deleteItem(ItemsInterface item) {
+        String selection = item.getIdColumn() + " = ?";
+        String[] selectionArgs = { String.valueOf(item.getItemId()) };
+        return db.delete(item.getTableName(), selection, selectionArgs);
+    }
+
+    public long deleteItemsByShoppingListId(long shoppingListId) {
+        String selection = ItemContract.ItemEntry.COLUMN_LIST_ID + " = ?";
+        String[] selectionArgs = { String.valueOf(shoppingListId) };
         return db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
     }
 
