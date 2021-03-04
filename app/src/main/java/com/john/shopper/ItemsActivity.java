@@ -32,6 +32,8 @@ import java.util.List;
 
 public class ItemsActivity extends AppCompatActivity {
 
+    public static final String LIST_ID = "LIST_ID";
+
     List<ShoppingListItem> shoppingListItems;
 
     RecyclerView recyclerView;
@@ -49,7 +51,7 @@ public class ItemsActivity extends AppCompatActivity {
         itemsModel = new ItemsModel(getApplicationContext());
 
         Bundle bundle = getIntent().getExtras();
-        listId = bundle.getLong(CommonData.LIST_ID);
+        listId = bundle.getLong(LIST_ID);
 
         shoppingListItems = itemsModel.getItemsByListId(listId);
 

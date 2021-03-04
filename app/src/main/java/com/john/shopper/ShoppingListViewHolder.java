@@ -35,7 +35,7 @@ public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements V
         ShoppingList shoppingList = this.mItems.get(position);
 
         Intent intent = new Intent(mContext, ItemsActivity.class);
-        intent.putExtra(CommonData.LIST_ID, shoppingList.getItemId());
+        intent.putExtra(ItemsActivity.LIST_ID, shoppingList.getItemId());
         mContext.startActivity(intent);
     }
 }
