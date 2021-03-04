@@ -9,20 +9,24 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.john.shopper.model.Item;
+import com.john.shopper.model.ItemContract;
+import com.john.shopper.model.ItemsModel;
+
 import java.util.Collections;
 import java.util.List;
 
-public class RecyclerViewAdapterTemplate extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemMoveCallback.ActionCompletionContract {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemMoveCallback.ActionCompletionContract {
     private LayoutInflater mInflater;
     private Context mContext;
     private int layoutId;
     private RecyclerViewBinder mBinder;
 
     private ItemsModel itemsModel;
-    private List<? extends ItemsInterface> items;
+    private List<? extends Item> items;
 
     // data is passed into the constructor
-    RecyclerViewAdapterTemplate(Context context, List<? extends ItemsInterface> items, int layoutId, RecyclerViewBinder binder) {
+    RecyclerViewAdapter(Context context, List<? extends Item> items, int layoutId, RecyclerViewBinder binder) {
         this.mContext = context;
         this.items = items;
         this.layoutId = layoutId;
@@ -60,14 +64,14 @@ public class RecyclerViewAdapterTemplate extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onViewSwiped(int position) {
-        ItemsInterface item = items.get(position);
+        Item item = items.get(position);
         Log.e("SWIPE", item.getTableName());
         long numListsDel = itemsModel.deleteItem(item);
         Log.e("SWIPE", String.valueOf(numListsDel));
 
         if (numListsDel > 0 && item.getTableName().equals(ItemContract.ShoppingListEntry.TABLE_NAME)) {
             long numItemsDeleted = itemsModel.deleteItemsByShoppingListId(item.getItemId());
-            Log.e("SWIPE", "num items deleted: " + numItemsDeleted);
+            Log.e("SWIPE", "num shoppingListItems deleted: " + numItemsDeleted);
         }
 
         this.items.remove(position);

@@ -7,14 +7,17 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.ShoppingListItem;
+
 import java.util.List;
 
 // stores and recycles views as they are scrolled off screen
 public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private Context mContext;
-    private RecyclerViewAdapterTemplate mAdapter;
-    private List<Item> mItems;
+    private RecyclerViewAdapter mAdapter;
+    private List<ShoppingListItem> mShoppingListItems;
 
     public TextView itemNameTextView;
     public TextView itemQuantityTextView;
@@ -23,12 +26,12 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     private ItemsModel itemsModel;
 
-    ItemsViewHolder(Context context, RecyclerViewAdapterTemplate adapter, View itemView, List<Item> items) {
+    ItemsViewHolder(Context context, RecyclerViewAdapter adapter, View itemView, List<ShoppingListItem> shoppingListItems) {
         super(itemView);
 
         this.mContext = context;
         this.mAdapter = adapter;
-        this.mItems = items;
+        this.mShoppingListItems = shoppingListItems;
         this.itemsModel = new ItemsModel(context);
 
         itemNameTextView = itemView.findViewById(R.id.item_name_text_view);
@@ -42,15 +45,15 @@ public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnC
     @Override
     public void onClick(View view) {
         int itemIndex = getAdapterPosition();
-        Item selectedItem = this.mItems.get(itemIndex);
+        ShoppingListItem selectedShoppingListItem = this.mShoppingListItems.get(itemIndex);
 
-        // Only allow items to be crossed off
-        if (!selectedItem.isSection()) {
-            boolean newStatus = !selectedItem.isComplete();
-            selectedItem.setComplete(newStatus);
+        // Only allow shoppingListItems to be crossed off
+        if (!selectedShoppingListItem.isSection()) {
+            boolean newStatus = !selectedShoppingListItem.isComplete();
+            selectedShoppingListItem.setComplete(newStatus);
         }
 
-        itemsModel.updateItem(selectedItem);
+        itemsModel.updateItem(selectedShoppingListItem);
         this.mAdapter.notifyDataSetChanged();
     }
 }

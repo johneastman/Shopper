@@ -1,6 +1,6 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
-public interface ItemsInterface {
+public interface Item {
     String getTableName();
 
     String getIdColumn();

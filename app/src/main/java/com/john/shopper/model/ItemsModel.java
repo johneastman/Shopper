@@ -1,4 +1,4 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -81,7 +81,7 @@ public class ItemsModel {
         return db.insert(ItemContract.ItemEntry.TABLE_NAME, null, values);
     }
 
-    public List<Item> getItemsByListId(long listId)
+    public List<ShoppingListItem> getItemsByListId(long listId)
     {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -112,7 +112,7 @@ public class ItemsModel {
                 null
         );
 
-        List<Item> items = new ArrayList<>();
+        List<ShoppingListItem> shoppingListItems = new ArrayList<>();
         while(cursor.moveToNext()) {
             long itemId = cursor.getLong(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry._ID));
             String itemName = cursor.getString(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_ITEM_NAME));
@@ -121,25 +121,25 @@ public class ItemsModel {
             int itemIsComplete = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_IS_COMPLETE));
             int itemPosition = cursor.getInt(cursor.getColumnIndexOrThrow(ItemContract.ItemEntry.COLUMN_POSITION));
 
-            Item item = new Item(itemId, itemName, itemQuantity, itemIsSection == 1, itemIsComplete == 1, itemPosition);
-            items.add(item);
+            ShoppingListItem shoppingListItem = new ShoppingListItem(itemId, itemName, itemQuantity, itemIsSection == 1, itemIsComplete == 1, itemPosition);
+            shoppingListItems.add(shoppingListItem);
         }
         cursor.close();
-        return items;
+        return shoppingListItems;
     }
 
-    public long updateItem(Item item) {
+    public long updateItem(ShoppingListItem shoppingListItem) {
         // New value for one column
         ContentValues values = new ContentValues();
-        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, item.getName());
-        values.put(ItemContract.ItemEntry.COLUMN_QUANTITY, item.getQuantity());
-        values.put(ItemContract.ItemEntry.COLUMN_IS_SECTION, item.isSection() ? 1 : 0);
-        values.put(ItemContract.ItemEntry.COLUMN_IS_COMPLETE, item.isComplete() ? 1 : 0);
-        values.put(ItemContract.ItemEntry.COLUMN_POSITION, item.getPosition());
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, shoppingListItem.getName());
+        values.put(ItemContract.ItemEntry.COLUMN_QUANTITY, shoppingListItem.getQuantity());
+        values.put(ItemContract.ItemEntry.COLUMN_IS_SECTION, shoppingListItem.isSection() ? 1 : 0);
+        values.put(ItemContract.ItemEntry.COLUMN_IS_COMPLETE, shoppingListItem.isComplete() ? 1 : 0);
+        values.put(ItemContract.ItemEntry.COLUMN_POSITION, shoppingListItem.getPosition());
 
         // Which row to update, based on the id
         String selection = ItemContract.ItemEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(item.getItemId()) };
+        String[] selectionArgs = { String.valueOf(shoppingListItem.getItemId()) };
 
         return db.update(
                 ItemContract.ItemEntry.TABLE_NAME,
@@ -166,7 +166,7 @@ public class ItemsModel {
         );
     }
 
-    public long deleteItem(ItemsInterface item) {
+    public long deleteItem(Item item) {
         String selection = item.getIdColumn() + " = ?";
         String[] selectionArgs = { String.valueOf(item.getItemId()) };
         return db.delete(item.getTableName(), selection, selectionArgs);
@@ -178,22 +178,22 @@ public class ItemsModel {
         return db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
     }
 
-    public int getNumberOfIncompleteItems(List<Item> items) {
+    public int getNumberOfIncompleteItems(List<ShoppingListItem> shoppingListItems) {
         int incompleteItemsCount = 0;
-        for (Item item : items) {
-            if (!item.isSection() && !item.isComplete()) {
-                incompleteItemsCount += item.getQuantity();
+        for (ShoppingListItem shoppingListItem : shoppingListItems) {
+            if (!shoppingListItem.isSection() && !shoppingListItem.isComplete()) {
+                incompleteItemsCount += shoppingListItem.getQuantity();
             }
         }
         return incompleteItemsCount;
     }
 
-    public int getEndOfSectionPosition(int position, List<Item> items) {
+    public int getEndOfSectionPosition(int position, List<ShoppingListItem> shoppingListItems) {
         boolean sectionFound = false;
         int bottomOfSectionPosition = position;
-        for (int i = bottomOfSectionPosition; i < items.size(); i++){
-            Item currentItem = items.get(i);
-            if (currentItem.isSection()) {
+        for (int i = bottomOfSectionPosition; i < shoppingListItems.size(); i++){
+            ShoppingListItem currentShoppingListItem = shoppingListItems.get(i);
+            if (currentShoppingListItem.isSection()) {
                 bottomOfSectionPosition = i;
                 sectionFound = true;
                 break;
@@ -206,7 +206,7 @@ public class ItemsModel {
         // If no section was found, this item is being added to the last section in the list. The "bottom of list" option
         // in this situation will be a new item at the end of the entire list.
         if (!sectionFound) {
-            bottomOfSectionPosition = items.size();
+            bottomOfSectionPosition = shoppingListItems.size();
         }
 
         return bottomOfSectionPosition;

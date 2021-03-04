@@ -10,5 +10,5 @@ public interface RecyclerViewBinder {
 
     void onBindViewHolder(Context context, @NonNull RecyclerView.ViewHolder holder, int position);
 
-    RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapterTemplate adapter, View view);
+    RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapter adapter, View view);
 }

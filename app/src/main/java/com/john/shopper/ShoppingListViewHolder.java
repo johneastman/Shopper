@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.john.shopper.model.ShoppingList;
+
 import java.util.List;
 
 public class ShoppingListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

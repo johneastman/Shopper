@@ -1,6 +1,6 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
-public class ShoppingList implements ItemsInterface {
+public class ShoppingList implements Item {
 
     private long listId;
     private int position;

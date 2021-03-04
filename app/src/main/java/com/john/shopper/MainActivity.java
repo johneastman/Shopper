@@ -17,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.ShoppingList;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ItemsModel itemsModel;
 
     RecyclerView recyclerView;
-    RecyclerViewAdapterTemplate mAdapter;
+    RecyclerViewAdapter mAdapter;
 
     List<ShoppingList> shoppingLists;
 
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         // mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
 
-        mAdapter = new RecyclerViewAdapterTemplate(
+        mAdapter = new RecyclerViewAdapter(
                 MainActivity.this,
                 shoppingLists,
                 R.layout.shopping_lists_recycler_view_row,
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapterTemplate adapter, View view) {
+                    public RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapter adapter, View view) {
                         return new ShoppingListViewHolder(context, view, shoppingLists);
                     }
                 });

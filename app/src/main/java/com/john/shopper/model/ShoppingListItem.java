@@ -1,6 +1,6 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
-public class Item implements ItemsInterface {
+public class ShoppingListItem implements Item {
 
     private long id;
     private String name;
@@ -10,7 +10,7 @@ public class Item implements ItemsInterface {
     private int position;
 
 
-    public Item(long id, String name, int quantity, boolean isSection, boolean isComplete, int position) {
+    public ShoppingListItem(long id, String name, int quantity, boolean isSection, boolean isComplete, int position) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
