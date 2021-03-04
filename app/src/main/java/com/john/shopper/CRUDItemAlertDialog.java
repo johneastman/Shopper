@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.john.shopper.model.ItemTypes;
+import com.john.shopper.model.ShoppingListItem;
+
 import java.util.List;
 
 public class CRUDItemAlertDialog {
@@ -89,14 +92,14 @@ public class CRUDItemAlertDialog {
         this.negativeButtonAction = negativeButtonAction;
     }
 
-    public Dialog getDialog(Item item) {
+    public Dialog getDialog(ShoppingListItem shoppingListItem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.add_item_layout, null);
 
         editText = dialogView.findViewById(R.id.new_item_edit_text);
-        if (item != null) {
-            editText.setText(item.getName());
+        if (shoppingListItem != null) {
+            editText.setText(shoppingListItem.getName());
         }
 
         spinner = dialogView.findViewById(R.id.new_item_spinner);
@@ -117,17 +120,17 @@ public class CRUDItemAlertDialog {
             }
         });
 
-        if (item != null) {
-            int spinnerPosition = adapter.getPosition(item.isSection() ? ItemTypes.SECTION : ItemTypes.ITEM);
+        if (shoppingListItem != null) {
+            int spinnerPosition = adapter.getPosition(shoppingListItem.isSection() ? ItemTypes.SECTION : ItemTypes.ITEM);
             spinner.setSelection(spinnerPosition);
         }
 
         // Quantity
         quantityLinearLayout = dialogView.findViewById(R.id.quantity_setting);
-        quantityLinearLayout.setVisibility(item != null && item.isSection() ? View.GONE : View.VISIBLE);
+        quantityLinearLayout.setVisibility(shoppingListItem != null && shoppingListItem.isSection() ? View.GONE : View.VISIBLE);
 
         quantityTextView = dialogView.findViewById(R.id.display_quantity);
-        setQuantity(item == null ? this.quantity : item.getQuantity());
+        setQuantity(shoppingListItem == null ? this.quantity : shoppingListItem.getQuantity());
 
         decreaseQuantityButton = dialogView.findViewById(R.id.decrease_qantity);
         decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {

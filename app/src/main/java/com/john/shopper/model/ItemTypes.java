@@ -1,4 +1,4 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;

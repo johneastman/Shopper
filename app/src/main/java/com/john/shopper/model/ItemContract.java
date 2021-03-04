@@ -1,4 +1,4 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
 import android.provider.BaseColumns;
 
@@ -21,5 +21,6 @@ public final class ItemContract {
     public static class ShoppingListEntry implements BaseColumns {
         public static final String TABLE_NAME = "shopping_lists";
         public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_POSITION = "position";
     }
 }

@@ -1,5 +1,6 @@
 package com.john.shopper;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.ShoppingList;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ItemsModel itemsModel;
 
     RecyclerView recyclerView;
-    ShoppingListsRecyclerViewAdapter mAdapter;
+    RecyclerViewAdapter mAdapter;
 
     List<ShoppingList> shoppingLists;
 
@@ -38,7 +43,26 @@ public class MainActivity extends AppCompatActivity {
         shoppingLists = itemsModel.getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
-        mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
+        // mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
+
+        mAdapter = new RecyclerViewAdapter(
+                MainActivity.this,
+                shoppingLists,
+                R.layout.shopping_lists_recycler_view_row,
+                new RecyclerViewBinder() {
+                    @Override
+                    public void onBindViewHolder(Context context, @NonNull RecyclerView.ViewHolder holder, int position) {
+                        ShoppingListViewHolder shoppingListViewHolder = (ShoppingListViewHolder) holder;
+
+                        ShoppingList shoppingList = shoppingLists.get(position);
+                        shoppingListViewHolder.shoppingListNameTextView.setText(shoppingList.getName());
+                    }
+
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapter adapter, View view) {
+                        return new ShoppingListViewHolder(context, view, shoppingLists);
+                    }
+                });
 
         ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -80,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 if (shoppingListName.length() > 0) {
                                     long listID =  itemsModel.insertShoppingList(shoppingListName);
-                                    ShoppingList shoppingList = new ShoppingList(listID, shoppingListName);
+                                    ShoppingList shoppingList = new ShoppingList(listID, shoppingListName, shoppingLists.size() + 1);
                                     shoppingLists.add(shoppingList);
                                     mAdapter.notifyDataSetChanged();
                                 }
@@ -94,5 +118,16 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        for (int i = 0; i < shoppingLists.size(); i++) {
+            ShoppingList shoppingList = shoppingLists.get(i);
+            shoppingList.setPosition(i);
+
+            itemsModel.updateShoppingList(shoppingList);
+        }
+        super.onDestroy();
     }
 }

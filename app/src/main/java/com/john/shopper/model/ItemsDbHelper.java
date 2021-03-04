@@ -1,4 +1,4 @@
-package com.john.shopper;
+package com.john.shopper.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ItemsDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "ShoppingLists.db";
 
     private static final String SQL_CREATE_ITEMS =
@@ -22,7 +22,8 @@ public class ItemsDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_SHOPPING_LISTS =
             "CREATE TABLE " + ItemContract.ShoppingListEntry.TABLE_NAME + " (" +
                     ItemContract.ShoppingListEntry._ID + " INTEGER PRIMARY KEY," +
-                    ItemContract.ShoppingListEntry.COLUMN_NAME + " TEXT)";
+                    ItemContract.ShoppingListEntry.COLUMN_NAME + " TEXT," +
+                    ItemContract.ShoppingListEntry.COLUMN_POSITION + " INTEGER)";
 
     private static final String SQL_DELETE_ITEMS =
             "DROP TABLE IF EXISTS " + ItemContract.ItemEntry.TABLE_NAME;
