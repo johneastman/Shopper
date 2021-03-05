@@ -21,6 +21,7 @@ import android.widget.EditText;
 
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingList;
+import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     ItemsModel itemsModel;
 
     RecyclerView recyclerView;
-    RecyclerViewAdapter mAdapter;
+    ShoppingListsRecyclerViewAdapter mAdapter;
 
     List<ShoppingList> shoppingLists;
 
@@ -43,26 +44,7 @@ public class MainActivity extends AppCompatActivity {
         shoppingLists = itemsModel.getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
-        // mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
-
-        mAdapter = new RecyclerViewAdapter(
-                MainActivity.this,
-                shoppingLists,
-                R.layout.shopping_lists_recycler_view_row,
-                new RecyclerViewBinder() {
-                    @Override
-                    public void onBindViewHolder(Context context, @NonNull RecyclerView.ViewHolder holder, int position) {
-                        ShoppingListViewHolder shoppingListViewHolder = (ShoppingListViewHolder) holder;
-
-                        ShoppingList shoppingList = shoppingLists.get(position);
-                        shoppingListViewHolder.shoppingListNameTextView.setText(shoppingList.getName());
-                    }
-
-                    @Override
-                    public RecyclerView.ViewHolder onCreateViewHolder(Context context, RecyclerViewAdapter adapter, View view) {
-                        return new ShoppingListViewHolder(context, view, shoppingLists);
-                    }
-                });
+        mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
 
         ItemMoveCallback callback = new ItemMoveCallback(mAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);

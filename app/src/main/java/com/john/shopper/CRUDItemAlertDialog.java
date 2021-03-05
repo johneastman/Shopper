@@ -30,7 +30,7 @@ public class CRUDItemAlertDialog {
         private int id = View.generateViewId();
         private boolean isDefault;
 
-        RadioButtonData(int textResourceId, int position, boolean isDefault) {
+        public RadioButtonData(int textResourceId, int position, boolean isDefault) {
             this.textResourceId = textResourceId;
             this.position = position;
             this.isDefault = isDefault;
