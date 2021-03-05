@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
                 builder.setView(dialogView);
                 builder.setPositiveButton(
-                        R.string.new_item_add, new DialogInterface.OnClickListener() {
+                        R.string.new_item_add,
+                        new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
@@ -110,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                builder.setNegativeButton(
+                        R.string.new_item_cancel,
+                        null
+                );
                 builder.setTitle(R.string.new_shopping_list_title);
 
                 Dialog dialog = builder.create();
