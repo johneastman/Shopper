@@ -22,13 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingListItem;
-import com.john.shopper.recyclerviews.ItemsViewHolder;
 import com.john.shopper.recyclerviews.RecyclerViewAdapter;
-import com.john.shopper.recyclerviews.RecyclerViewBinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,13 +132,20 @@ public class ItemsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        for (int i = 0; i < shoppingListItems.size(); i++) {
-            ShoppingListItem shoppingListItem = shoppingListItems.get(i);
-            shoppingListItem.setPosition(i);
-
-            itemsModel.updateItem(shoppingListItem);
-        }
+        itemsModel.saveShoppingListItems(shoppingListItems);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        itemsModel.saveShoppingListItems(shoppingListItems);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        itemsModel.saveShoppingListItems(shoppingListItems);
+        super.onStop();
     }
 
     private void setActionBarSubTitle() {

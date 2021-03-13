@@ -109,12 +109,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        for (int i = 0; i < shoppingLists.size(); i++) {
-            ShoppingList shoppingList = shoppingLists.get(i);
-            shoppingList.setPosition(i);
-
-            itemsModel.updateShoppingList(shoppingList);
-        }
+        itemsModel.saveShoppingLists(shoppingLists);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        itemsModel.saveShoppingLists(shoppingLists);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        itemsModel.saveShoppingLists(shoppingLists);
+        super.onStop();
     }
 }

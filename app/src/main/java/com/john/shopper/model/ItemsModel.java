@@ -211,4 +211,22 @@ public class ItemsModel {
 
         return bottomOfSectionPosition;
     }
+
+    public void saveShoppingListItems(List<ShoppingListItem> shoppingListItems) {
+        for (int i = 0; i < shoppingListItems.size(); i++) {
+            ShoppingListItem shoppingListItem = shoppingListItems.get(i);
+            shoppingListItem.setPosition(i);
+
+            this.updateItem(shoppingListItem);
+        }
+    }
+
+    public void saveShoppingLists(List<ShoppingList> shoppingLists) {
+        for (int i = 0; i < shoppingLists.size(); i++) {
+            ShoppingList shoppingList = shoppingLists.get(i);
+            shoppingList.setPosition(i);
+
+            this.updateShoppingList(shoppingList);
+        }
+    }
 }
