@@ -1,5 +1,7 @@
 package com.john.shopper.model;
 
+import androidx.annotation.Nullable;
+
 public class ShoppingList implements Item {
 
     private long listId;
@@ -40,5 +42,18 @@ public class ShoppingList implements Item {
     @Override
     public int getPosition() {
         return this.position;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (!(obj instanceof ShoppingList)) {
+            return false;
+        }
+
+        ShoppingList other = (ShoppingList) obj;
+
+        return  this.listId == other.getItemId() &&
+                this.name.equals(other.getName()) &&
+                this.position == other.getPosition();
     }
 }

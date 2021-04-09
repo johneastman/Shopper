@@ -1,6 +1,5 @@
 package com.john.shopper;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,6 +31,19 @@ public class MainActivity extends AppCompatActivity {
     ShoppingListsRecyclerViewAdapter mAdapter;
 
     List<ShoppingList> shoppingLists;
+
+    /*
+    The shopping list is saved in three lifecycle methods: onPause(), onStop(), and onDestroy().
+    This ensures that data is preserved regardless of how the user interacts with the app. However,
+    this approach is inefficient in situations where multiple lifecycle methods are called at once.
+    For example, when the user presses the back button, onPause(), onStop(), and onDestroy() are
+    all run.
+
+    In that situation, the data is being saved 3 times, when we only need to save the data once.
+    To address this issue, a flag has been created, 'isDataSaved', to ensures that the data is only
+    saved once.
+     */
+    private boolean isDataSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,21 +118,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void saveShoppingLists() {
+        if (!isDataSaved) {
+            itemsModel.saveShoppingLists(shoppingLists);
+            isDataSaved = true;
+        }
+    }
+
     @Override
     protected void onDestroy() {
-        itemsModel.saveShoppingLists(shoppingLists);
         super.onDestroy();
+        saveShoppingLists();
     }
 
     @Override
     protected void onPause() {
-        itemsModel.saveShoppingLists(shoppingLists);
         super.onPause();
+        saveShoppingLists();
     }
 
     @Override
     protected void onStop() {
-        itemsModel.saveShoppingLists(shoppingLists);
         super.onStop();
+        saveShoppingLists();
     }
 }

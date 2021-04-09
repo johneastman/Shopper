@@ -212,21 +212,41 @@ public class ItemsModel {
         return bottomOfSectionPosition;
     }
 
-    public void saveShoppingListItems(List<ShoppingListItem> shoppingListItems) {
-        for (int i = 0; i < shoppingListItems.size(); i++) {
-            ShoppingListItem shoppingListItem = shoppingListItems.get(i);
-            shoppingListItem.setPosition(i);
+    public void saveShoppingListItems(long listId, List<ShoppingListItem> shoppingListItems) {
+        List<ShoppingListItem> currentList = getItemsByListId(listId);
 
-            this.updateItem(shoppingListItem);
+        Log.e("LIST_ITEM_SIZES", "Current:" + currentList.size() + ", New: " + shoppingListItems.size());
+
+        for (int i = 0; i < currentList.size(); i++) {
+            ShoppingListItem currentItem = currentList.get(i);
+            ShoppingListItem newItem = shoppingListItems.get(i);
+
+            // Only update items that are not equal
+            if (!currentItem.equals(newItem)) {
+                newItem.setPosition(i);
+                this.updateItem(newItem);
+                Log.e("LIST_UPDATE", "item updated");
+            }
         }
     }
 
     public void saveShoppingLists(List<ShoppingList> shoppingLists) {
-        for (int i = 0; i < shoppingLists.size(); i++) {
-            ShoppingList shoppingList = shoppingLists.get(i);
-            shoppingList.setPosition(i);
 
-            this.updateShoppingList(shoppingList);
+        List<ShoppingList> currentList = getShoppingLists();
+
+        Log.e("LIST_SHOPPING_SIZES", "Current:" + currentList.size() + ", New: " + shoppingLists.size());
+
+        for (int i = 0; i < currentList.size(); i++) {
+            ShoppingList currentItem = currentList.get(i);
+            ShoppingList newItem = shoppingLists.get(i);
+
+            // Only update items that are not equal
+            if (!currentItem.equals(newItem)) {
+                newItem.setPosition(i);
+                this.updateShoppingList(newItem);
+
+                Log.e("LIST_UPDATE", "item updated");
+            }
         }
     }
 }
