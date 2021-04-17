@@ -2,7 +2,6 @@ package com.john.shopper.recyclerviews;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // inflates the row layout from xml when needed
     @Override
     public ShoppingListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.shopping_lists_recycler_view_row, parent, false);
+        View view = mInflater.inflate(R.layout.shopping_list_row, parent, false);
         return new ShoppingListViewHolder(view);
     }
 

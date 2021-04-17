@@ -92,10 +92,27 @@ public class CRUDItemAlertDialog {
         this.negativeButtonAction = negativeButtonAction;
     }
 
+    public EditText getEditText() {
+        return this.editText;
+    }
+
+    public Spinner getSpinner() {
+        return this.spinner;
+    }
+
+    public int getQuantity()
+    {
+        return this.quantity;
+    }
+
+    public int getNewItemPosition() {
+        return this.newItemPosition;
+    }
+
     public Dialog getDialog(ShoppingListItem shoppingListItem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
-        View dialogView = inflater.inflate(R.layout.add_item_layout, null);
+        View dialogView = inflater.inflate(R.layout.add_shopping_list_item_dialog, null);
 
         editText = dialogView.findViewById(R.id.new_item_edit_text);
         if (shoppingListItem != null) {
@@ -172,23 +189,6 @@ public class CRUDItemAlertDialog {
                 .setNegativeButton(this.negativeButtonResourceId, this.negativeButtonAction);
 
         return builder.create();
-    }
-
-    public EditText getEditText() {
-        return this.editText;
-    }
-
-    public Spinner getSpinner() {
-        return this.spinner;
-    }
-
-    public int getQuantity()
-    {
-        return this.quantity;
-    }
-
-    public int getNewItemPosition() {
-        return this.newItemPosition;
     }
 
     private void addRadioButtons() {

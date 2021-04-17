@@ -1,6 +1,5 @@
 package com.john.shopper;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -9,25 +8,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingListItem;
-import com.john.shopper.recyclerviews.RecyclerViewAdapter;
+import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +32,7 @@ public class ItemsActivity extends AppCompatActivity {
     List<ShoppingListItem> shoppingListItems;
 
     RecyclerView recyclerView;
-    RecyclerViewAdapter mAdapter;
+    ShoppingListItemsRecyclerViewAdapter mAdapter;
 
     long listId;
 
@@ -56,12 +49,13 @@ public class ItemsActivity extends AppCompatActivity {
     To address this issue, a flag has been created, 'isDataSaved', to ensures that the data is only
     saved once.
      */
-    private boolean isDataSaved = false;
+    private boolean isDataSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
+        isDataSaved = false;
 
         itemsModel = new ItemsModel(getApplicationContext());
 
@@ -72,7 +66,7 @@ public class ItemsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
 
-        mAdapter = new RecyclerViewAdapter(ItemsActivity.this, listId, shoppingListItems);
+        mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId, shoppingListItems);
 
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override

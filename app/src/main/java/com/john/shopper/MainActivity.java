@@ -43,12 +43,13 @@ public class MainActivity extends AppCompatActivity {
     To address this issue, a flag has been created, 'isDataSaved', to ensures that the data is only
     saved once.
      */
-    private boolean isDataSaved = false;
+    private boolean isDataSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_items);
+        isDataSaved = false;
 
         itemsModel = new ItemsModel(getApplicationContext());
 
