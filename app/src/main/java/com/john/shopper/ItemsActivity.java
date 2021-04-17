@@ -145,7 +145,7 @@ public class ItemsActivity extends AppCompatActivity {
 
     private void saveShoppingListItems() {
         if (!isDataSaved) {
-            itemsModel.saveShoppingListItems(listId, shoppingListItems);
+            itemsModel.saveShoppingListItems(shoppingListItems);
             isDataSaved = true;
         }
     }

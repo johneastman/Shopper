@@ -7,15 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ItemsModel {
     ItemsDbHelper dbHelper;
-    SQLiteDatabase db;
 
     public ItemsModel(Context context) {
         this.dbHelper = new ItemsDbHelper(context);
-        this.db = dbHelper.getWritableDatabase();
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -52,6 +51,7 @@ public class ItemsModel {
             shoppingLists.add(shoppingList);
         }
         cursor.close();
+        db.close();
         return shoppingLists;
     }
 
@@ -62,13 +62,19 @@ public class ItemsModel {
      * @return the primary key of the shopping list row
      */
     public long insertShoppingList(String listName) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put(ItemContract.ShoppingListEntry.COLUMN_NAME, listName);
-        return db.insert(ItemContract.ShoppingListEntry.TABLE_NAME, null, values);
+        long itemId = db.insert(ItemContract.ShoppingListEntry.TABLE_NAME, null, values);
+        db.close();
+        return itemId;
     }
 
     public long addItem(long listId, String itemName, int quantity, boolean isSection, int position)
     {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(ItemContract.ItemEntry.COLUMN_LIST_ID, listId);
@@ -78,7 +84,9 @@ public class ItemsModel {
         values.put(ItemContract.ItemEntry.COLUMN_POSITION, position);
 
         // Insert the new row, returning the primary key value of the new row
-        return db.insert(ItemContract.ItemEntry.TABLE_NAME, null, values);
+        long itemId = db.insert(ItemContract.ItemEntry.TABLE_NAME, null, values);
+        db.close();
+        return itemId;
     }
 
     public List<ShoppingListItem> getItemsByListId(long listId)
@@ -125,57 +133,101 @@ public class ItemsModel {
             shoppingListItems.add(shoppingListItem);
         }
         cursor.close();
+        db.close();
+
         return shoppingListItems;
     }
 
-    public long updateItem(ShoppingListItem shoppingListItem) {
-        // New value for one column
-        ContentValues values = new ContentValues();
-        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, shoppingListItem.getName());
-        values.put(ItemContract.ItemEntry.COLUMN_QUANTITY, shoppingListItem.getQuantity());
-        values.put(ItemContract.ItemEntry.COLUMN_IS_SECTION, shoppingListItem.isSection() ? 1 : 0);
-        values.put(ItemContract.ItemEntry.COLUMN_IS_COMPLETE, shoppingListItem.isComplete() ? 1 : 0);
-        values.put(ItemContract.ItemEntry.COLUMN_POSITION, shoppingListItem.getPosition());
-
-        // Which row to update, based on the id
-        String selection = ItemContract.ItemEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(shoppingListItem.getItemId()) };
-
-        return db.update(
-                ItemContract.ItemEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs
-        );
+    public long updateShoppingListItem(ShoppingListItem shoppingListItem) {
+        return updateShoppingListItems(Arrays.asList(shoppingListItem));
     }
 
-    public long updateShoppingList(ShoppingList shoppingList) {
-        ContentValues values = new ContentValues();
-        values.put(ItemContract.ShoppingListEntry.COLUMN_NAME, shoppingList.getName());
-        values.put(ItemContract.ShoppingListEntry.COLUMN_POSITION, shoppingList.getPosition());
+    public long updateShoppingListItems(List<ShoppingListItem> shoppingListItems) {
 
-        // Which row to update, based on the id
-        String selection = ItemContract.ShoppingListEntry._ID + " = ?";
-        String[] selectionArgs = { String.valueOf(shoppingList.getItemId()) };
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long numShoppingListItemsUpdated = 0;
 
-        return db.update(
-                ItemContract.ShoppingListEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs
-        );
+        db.beginTransaction();
+
+        for (ShoppingListItem shoppingListItem : shoppingListItems) {
+            // New value for one column
+            ContentValues values = new ContentValues();
+            values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, shoppingListItem.getName());
+            values.put(ItemContract.ItemEntry.COLUMN_QUANTITY, shoppingListItem.getQuantity());
+            values.put(ItemContract.ItemEntry.COLUMN_IS_SECTION, shoppingListItem.isSection() ? 1 : 0);
+            values.put(ItemContract.ItemEntry.COLUMN_IS_COMPLETE, shoppingListItem.isComplete() ? 1 : 0);
+            values.put(ItemContract.ItemEntry.COLUMN_POSITION, shoppingListItem.getPosition());
+
+            // Which row to update, based on the id
+            String selection = ItemContract.ItemEntry._ID + " = ?";
+            String[] selectionArgs = { String.valueOf(shoppingListItem.getItemId()) };
+
+            numShoppingListItemsUpdated += db.update(
+                    ItemContract.ItemEntry.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs
+            );
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
+        return numShoppingListItemsUpdated;
+    }
+
+    public long updateShoppingLists(List<ShoppingList> shoppingLists) {
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long numShoppingListsUpdated = 0;
+
+        db.beginTransaction();
+
+        for (ShoppingList shoppingList : shoppingLists) {
+            ContentValues values = new ContentValues();
+            values.put(ItemContract.ShoppingListEntry.COLUMN_NAME, shoppingList.getName());
+            values.put(ItemContract.ShoppingListEntry.COLUMN_POSITION, shoppingList.getPosition());
+
+            // Which row to update, based on the id
+            String selection = ItemContract.ShoppingListEntry._ID + " = ?";
+            String[] selectionArgs = { String.valueOf(shoppingList.getItemId()) };
+
+            numShoppingListsUpdated += db.update(
+                    ItemContract.ShoppingListEntry.TABLE_NAME,
+                    values,
+                    selection,
+                    selectionArgs
+            );
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
+        return numShoppingListsUpdated;
     }
 
     public long deleteItem(Item item) {
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         String selection = item.getIdColumn() + " = ?";
         String[] selectionArgs = { String.valueOf(item.getItemId()) };
-        return db.delete(item.getTableName(), selection, selectionArgs);
+        int numItemsDeleted = db.delete(item.getTableName(), selection, selectionArgs);
+        db.close();
+        return numItemsDeleted;
     }
 
     public long deleteItemsByShoppingListId(long shoppingListId) {
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         String selection = ItemContract.ItemEntry.COLUMN_LIST_ID + " = ?";
         String[] selectionArgs = { String.valueOf(shoppingListId) };
-        return db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
+        long numItemsDeleted = db.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
+        db.close();
+        return numItemsDeleted;
     }
 
     public int getNumberOfIncompleteItems(List<ShoppingListItem> shoppingListItems) {
@@ -212,41 +264,20 @@ public class ItemsModel {
         return bottomOfSectionPosition;
     }
 
-    public void saveShoppingListItems(long listId, List<ShoppingListItem> shoppingListItems) {
-        List<ShoppingListItem> currentList = getItemsByListId(listId);
-
-        Log.e("LIST_ITEM_SIZES", "Current:" + currentList.size() + ", New: " + shoppingListItems.size());
-
-        for (int i = 0; i < currentList.size(); i++) {
-            ShoppingListItem currentItem = currentList.get(i);
-            ShoppingListItem newItem = shoppingListItems.get(i);
-
-            // Only update items that are not equal
-            if (!currentItem.equals(newItem)) {
-                newItem.setPosition(i);
-                this.updateItem(newItem);
-                Log.e("LIST_UPDATE", "item updated");
-            }
+    public void saveShoppingListItems(List<ShoppingListItem> shoppingListItems) {
+        for (int i = 0; i < shoppingListItems.size(); i++) {
+            shoppingListItems.get(i).setPosition(i);
         }
+
+        updateShoppingListItems(shoppingListItems);
     }
 
     public void saveShoppingLists(List<ShoppingList> shoppingLists) {
 
-        List<ShoppingList> currentList = getShoppingLists();
-
-        Log.e("LIST_SHOPPING_SIZES", "Current:" + currentList.size() + ", New: " + shoppingLists.size());
-
-        for (int i = 0; i < currentList.size(); i++) {
-            ShoppingList currentItem = currentList.get(i);
-            ShoppingList newItem = shoppingLists.get(i);
-
-            // Only update items that are not equal
-            if (!currentItem.equals(newItem)) {
-                newItem.setPosition(i);
-                this.updateShoppingList(newItem);
-
-                Log.e("LIST_UPDATE", "item updated");
-            }
+        for (int i = 0; i < shoppingLists.size(); i++) {
+            shoppingLists.get(i).setPosition(i);
         }
+
+        updateShoppingLists(shoppingLists);
     }
 }

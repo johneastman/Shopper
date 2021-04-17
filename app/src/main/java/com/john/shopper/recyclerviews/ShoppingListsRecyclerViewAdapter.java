@@ -70,13 +70,10 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     @Override
     public void onViewSwiped(int position) {
         Item item = items.get(position);
-        Log.e("SWIPE", item.getTableName());
         long numListsDel = itemsModel.deleteItem(item);
-        Log.e("SWIPE", String.valueOf(numListsDel));
 
         if (numListsDel > 0 && item.getTableName().equals(ItemContract.ShoppingListEntry.TABLE_NAME)) {
-            long numItemsDeleted = itemsModel.deleteItemsByShoppingListId(item.getItemId());
-            Log.e("SWIPE", "num shoppingListItems deleted: " + numItemsDeleted);
+            itemsModel.deleteItemsByShoppingListId(item.getItemId());
         }
 
         this.items.remove(position);

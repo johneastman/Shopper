@@ -27,7 +27,9 @@ import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingListItem;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -201,13 +203,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onViewSwiped(int position) {
         Item item = items.get(position);
-        Log.e("SWIPE", item.getTableName());
         long numListsDel = itemsModel.deleteItem(item);
-        Log.e("SWIPE", String.valueOf(numListsDel));
 
         if (numListsDel > 0 && item.getTableName().equals(ItemContract.ShoppingListEntry.TABLE_NAME)) {
-            long numItemsDeleted = itemsModel.deleteItemsByShoppingListId(item.getItemId());
-            Log.e("SWIPE", "num shoppingListItems deleted: " + numItemsDeleted);
+            itemsModel.deleteItemsByShoppingListId(item.getItemId());
         }
 
         this.items.remove(position);
@@ -245,7 +244,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 selectedShoppingListItem.setComplete(newStatus);
             }
 
-            itemsModel.updateItem(selectedShoppingListItem);
+            itemsModel.updateShoppingListItem(selectedShoppingListItem);
             notifyDataSetChanged();
         }
     }
