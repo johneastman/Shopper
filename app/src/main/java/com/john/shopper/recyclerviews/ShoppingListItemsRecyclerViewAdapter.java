@@ -84,7 +84,13 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                         int quantity = editItemDialog.getQuantity();
                         int newPosition = editItemDialog.getNewItemPosition();
 
-                        ShoppingListItem shoppingListItem = new ShoppingListItem(oldShoppingListItem.getItemId(), newName, quantity, ItemTypes.isSection(newItemTypeDescriptor), oldShoppingListItem.isComplete(), newPosition);
+                        ShoppingListItem shoppingListItem = new ShoppingListItem(
+                                oldShoppingListItem.getItemId(),
+                                newName,
+                                quantity,
+                                ItemTypes.isSection(newItemTypeDescriptor),
+                                oldShoppingListItem.isComplete(),
+                                newPosition);
 
                         items.remove(position);
                         items.add(newPosition, shoppingListItem);

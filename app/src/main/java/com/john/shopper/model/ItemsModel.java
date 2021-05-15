@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,9 +13,11 @@ import java.util.List;
 
 public class ItemsModel {
     ItemsDbHelper dbHelper;
+    Context context;
 
     public ItemsModel(Context context) {
         this.dbHelper = new ItemsDbHelper(context);
+        this.context = context;
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -162,17 +165,25 @@ public class ItemsModel {
             String selection = ItemContract.ItemEntry._ID + " = ?";
             String[] selectionArgs = { String.valueOf(shoppingListItem.getItemId()) };
 
-            numShoppingListItemsUpdated += db.update(
+            long numItemsUpdated = db.update(
                     ItemContract.ItemEntry.TABLE_NAME,
                     values,
                     selection,
                     selectionArgs
             );
+
+            Log.e("ITEM_UPDATED", shoppingListItem.getName() + ": " + numItemsUpdated);
+
+            numShoppingListItemsUpdated += numItemsUpdated;
         }
 
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
+
+        if (numShoppingListItemsUpdated != shoppingListItems.size()) {
+            Toast.makeText(context, "Some items were not updated", Toast.LENGTH_LONG).show();
+        }
 
         return numShoppingListItemsUpdated;
     }
@@ -193,12 +204,14 @@ public class ItemsModel {
             String selection = ItemContract.ShoppingListEntry._ID + " = ?";
             String[] selectionArgs = { String.valueOf(shoppingList.getItemId()) };
 
-            numShoppingListsUpdated += db.update(
+            long numItemsUpdated = db.update(
                     ItemContract.ShoppingListEntry.TABLE_NAME,
                     values,
                     selection,
                     selectionArgs
             );
+
+            numShoppingListsUpdated += numItemsUpdated;
         }
 
         db.setTransactionSuccessful();
