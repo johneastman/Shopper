@@ -289,6 +289,18 @@ public class ItemsModel {
         return numItemsDeleted;
     }
 
+    /**
+     * Delete all shopping lists from the database
+     * @return the number of rows deleted
+     */
+    public long deleteShoppingLists() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        long numItemsDeleted = db.delete(ItemContract.ShoppingListEntry.TABLE_NAME, null, null);
+        db.close();
+        return numItemsDeleted;
+    }
+
     public int getNumberOfIncompleteItems(List<ShoppingListItem> shoppingListItems) {
         int incompleteItemsCount = 0;
         for (ShoppingListItem shoppingListItem : shoppingListItems) {

@@ -6,6 +6,7 @@
 
     <!-- menu items -->
     <string name="new_item_menu_title">Add New Item</string>
+    <string name="clear_all_items">Clear All Items</string>
 
     <!-- new/update item dialog options -->
     <string name="new_item_cancel">Cancel</string>

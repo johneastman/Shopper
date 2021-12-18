@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
@@ -118,6 +119,11 @@ public class ItemsActivity extends AppCompatActivity {
 
                 Dialog dialog = newItemDialog.getDialog(null);
                 dialog.show();
+                return true;
+            case R.id.clear_list:
+                shoppingListItems.clear();
+                itemsModel.deleteItemsByShoppingListId(listId);
+                mAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

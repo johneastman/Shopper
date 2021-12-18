@@ -199,7 +199,9 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
 
-        Collections.swap(items, oldPosition, newPosition);
+        ShoppingListItem item = items.get(oldPosition);
+        items.remove(oldPosition);
+        items.add(newPosition, item);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);

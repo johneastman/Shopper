@@ -101,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
                 Dialog dialog = builder.create();
                 dialog.show();
                 return true;
+            case R.id.clear_list:
+                shoppingLists.clear();
+                itemsModel.deleteShoppingLists();
+                mAdapter.notifyDataSetChanged();
             default:
                 return super.onOptionsItemSelected(item);
         }

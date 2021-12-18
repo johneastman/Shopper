@@ -17,8 +17,11 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -35,6 +38,9 @@ public class ShoppingListItemRecyclerViewAdapterTest {
 
     @Before
     public void setup() {
+
+        cleanup();
+
         listId = model.insertShoppingList(SHOPPING_LIST_NAME);
 
         List<ShoppingListItem> items = new ArrayList<>();
@@ -52,11 +58,11 @@ public class ShoppingListItemRecyclerViewAdapterTest {
 
     @After
     public void cleanup() {
+
+        model.deleteItemsByShoppingListId(listId);
+
         for (ShoppingList shoppingList : model.getShoppingLists()) {
             model.deleteItem(shoppingList);
-            if (shoppingList.getName().equals(SHOPPING_LIST_NAME)) {
-                break;
-            }
         }
     }
 
@@ -77,5 +83,44 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         }
 
         assertTrue(itemNotPresent);
+    }
+
+    @Test
+    public void testOnViewMovedWhenOldPositionGreaterThanNewPosition() {
+        recyclerViewAdapter.onViewMoved(3, 0);
+
+        List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
+        List<String> expectedOrder = Arrays.asList("D", "A", "B", "C", "E");
+        List<String> actualOrder = updatedItems.stream()
+                .map(ShoppingListItem::getName)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedOrder, actualOrder);
+    }
+
+    @Test
+    public void testOnViewMovedWhenOldPositionLessThanNewPosition() {
+        recyclerViewAdapter.onViewMoved(0, 3);
+
+        List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
+        List<String> expectedOrder = Arrays.asList("B", "C", "D", "A", "E");
+        List<String> actualOrder = updatedItems.stream()
+                .map(ShoppingListItem::getName)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedOrder, actualOrder);
+    }
+
+    @Test
+    public void testOnViewMovedWhenOldPositionsEqualsNewPosition() {
+        recyclerViewAdapter.onViewMoved(0, 0);
+
+        List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
+        List<String> expectedOrder = Arrays.asList("A", "B", "C", "D", "E");
+        List<String> actualOrder = updatedItems.stream()
+                .map(ShoppingListItem::getName)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedOrder, actualOrder);
     }
 }

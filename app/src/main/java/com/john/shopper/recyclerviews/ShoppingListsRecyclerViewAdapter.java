@@ -16,6 +16,7 @@ import com.john.shopper.model.Item;
 import com.john.shopper.model.ItemContract;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.ShoppingListItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +61,10 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        Collections.swap(items, oldPosition, newPosition);
+
+        ShoppingList item = items.get(oldPosition);
+        items.remove(oldPosition);
+        items.add(newPosition, item);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
