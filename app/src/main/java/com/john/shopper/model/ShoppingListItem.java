@@ -1,5 +1,6 @@
 package com.john.shopper.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class ShoppingListItem implements Item {
@@ -74,11 +75,17 @@ public class ShoppingListItem implements Item {
 
         ShoppingListItem other = (ShoppingListItem) obj;
 
-        return  this.id == other.getItemId() &&
-                this.name.equals(other.getName()) &&
-                this.quantity == other.getQuantity() &&
-                this.isSection == other.isSection() &&
-                this.position == other.getPosition() &&
-                this.isComplete == other.isComplete();
+        return this.id == other.getItemId() &&
+               this.name.equals(other.getName()) &&
+               this.quantity == other.getQuantity() &&
+               this.isSection == other.isSection() &&
+               this.position == other.getPosition() &&
+               this.isComplete == other.isComplete();
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

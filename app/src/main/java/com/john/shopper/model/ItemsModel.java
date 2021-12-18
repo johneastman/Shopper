@@ -20,6 +20,25 @@ public class ItemsModel {
         this.context = context;
     }
 
+    public void swapItems(List<? extends Item> items, int oldPosition, int newPosition) {
+
+        if (oldPosition != newPosition) {
+            int start = Math.min(oldPosition, newPosition);
+            int end = Math.max(oldPosition, newPosition);
+
+            // Update index of items
+            for (int i = start; i < end + 1; i++)
+            {
+                items.get(i).setPosition(i);
+            }
+
+            if (!items.isEmpty()) {
+                String tableName = items.get(0) instanceof ShoppingList ? ItemContract.ShoppingListEntry.TABLE_NAME : ItemContract.ItemEntry.TABLE_NAME;
+                this.updateItemListPositions(items, tableName);
+            }
+        }
+    }
+
     public List<ShoppingList> getShoppingLists() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -172,8 +191,6 @@ public class ItemsModel {
                     selectionArgs
             );
 
-            Log.e("ITEM_UPDATED", shoppingListItem.getName() + ": " + numItemsUpdated);
-
             numShoppingListItemsUpdated += numItemsUpdated;
         }
 
@@ -221,6 +238,35 @@ public class ItemsModel {
         return numShoppingListsUpdated;
     }
 
+    public long updateItemListPositions(List<? extends Item> items, String tableName) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long numItemsUpdated = 0;
+
+        db.beginTransaction();
+
+        for (Item item : items) {
+            ContentValues values = new ContentValues();
+            values.put(ItemContract.ShoppingListEntry.COLUMN_POSITION, item.getPosition());
+
+            // Which row to update, based on the id
+            String selection = ItemContract.ShoppingListEntry._ID + " = ?";
+            String[] selectionArgs = { String.valueOf(item.getItemId()) };
+
+            numItemsUpdated += db.update(
+                    tableName,
+                    values,
+                    selection,
+                    selectionArgs
+            );
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
+        return numItemsUpdated;
+    }
+
     public long deleteItem(Item item) {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -265,9 +311,6 @@ public class ItemsModel {
             }
         }
 
-        Log.e("ITEMS_END_OF_SECTION_ID", String.valueOf(bottomOfSectionPosition));
-        Log.e("ITEMS_IS_SECTION_FOUND", String.valueOf(sectionFound));
-
         // If no section was found, this item is being added to the last section in the list. The "bottom of list" option
         // in this situation will be a new item at the end of the entire list.
         if (!sectionFound) {
@@ -275,22 +318,5 @@ public class ItemsModel {
         }
 
         return bottomOfSectionPosition;
-    }
-
-    public void saveShoppingListItems(List<ShoppingListItem> shoppingListItems) {
-        for (int i = 0; i < shoppingListItems.size(); i++) {
-            shoppingListItems.get(i).setPosition(i);
-        }
-
-        updateShoppingListItems(shoppingListItems);
-    }
-
-    public void saveShoppingLists(List<ShoppingList> shoppingLists) {
-
-        for (int i = 0; i < shoppingLists.size(); i++) {
-            shoppingLists.get(i).setPosition(i);
-        }
-
-        updateShoppingLists(shoppingLists);
     }
 }

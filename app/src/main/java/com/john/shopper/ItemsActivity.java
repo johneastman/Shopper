@@ -38,24 +38,11 @@ public class ItemsActivity extends AppCompatActivity {
 
     ItemsModel itemsModel;
 
-    /*
-    The shopping list is saved in three lifecycle methods: onPause(), onStop(), and onDestroy().
-    This ensures that data is preserved regardless of how the user interacts with the app. However,
-    this approach is inefficient in situations where multiple lifecycle methods are called at once.
-    For example, when the user presses the back button, onPause(), onStop(), and onDestroy() are
-    all run.
-
-    In that situation, the data is being saved 3 times, when we only need to save the data once.
-    To address this issue, a flag has been created, 'isDataSaved', to ensures that the data is only
-    saved once.
-     */
-    private boolean isDataSaved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
-        isDataSaved = false;
 
         itemsModel = new ItemsModel(getApplicationContext());
 
@@ -135,31 +122,6 @@ public class ItemsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void saveShoppingListItems() {
-        if (!isDataSaved) {
-            itemsModel.saveShoppingListItems(shoppingListItems);
-            isDataSaved = true;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveShoppingListItems();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        saveShoppingListItems();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        saveShoppingListItems();
     }
 
     private void setActionBarSubTitle() {

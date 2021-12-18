@@ -64,6 +64,8 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
+
+        itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @Override
