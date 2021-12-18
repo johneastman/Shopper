@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/new_item"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="@string/new_item_menu_title"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/clear_list"
+        android:title="@string/clear_all_items"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/mark_all_items_as_complete"
+        android:title="@string/mark_all_items_as_complete"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/mark_all_items_as_incomplete"
+        android:title="@string/mark_all_items_as_incomplete"
+        app:showAsAction="collapseActionView"/>
+</menu>

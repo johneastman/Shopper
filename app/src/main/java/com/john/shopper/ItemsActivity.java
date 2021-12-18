@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
@@ -80,7 +79,7 @@ public class ItemsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.shopping_list_items_menu, menu);
         return true;
     }
 
@@ -125,6 +124,12 @@ public class ItemsActivity extends AppCompatActivity {
                 itemsModel.deleteItemsByShoppingListId(listId);
                 mAdapter.notifyDataSetChanged();
                 return true;
+            case R.id.mark_all_items_as_complete:
+                setCompleteStatus(true);
+                return true;
+            case R.id.mark_all_items_as_incomplete:
+                setCompleteStatus(false);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -143,5 +148,13 @@ public class ItemsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setSubtitle(itemsSubTitleText);
         }
+    }
+
+    private void setCompleteStatus(boolean isComplete) {
+        for (ShoppingListItem item : shoppingListItems) {
+            item.setComplete(isComplete);
+        }
+        itemsModel.updateShoppingListItems(shoppingListItems);
+        mAdapter.notifyDataSetChanged();
     }
 }

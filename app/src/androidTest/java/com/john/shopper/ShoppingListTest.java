@@ -19,6 +19,7 @@ import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingList;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,11 @@ public class ShoppingListTest {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    @Before
+    public void setup() {
+        this.cleanup();
+    }
 
     @After
     public void cleanup() {

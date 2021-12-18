@@ -239,6 +239,7 @@ public class ItemsModel {
     }
 
     public long updateItemListPositions(List<? extends Item> items, String tableName) {
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         long numItemsUpdated = 0;
 
@@ -296,9 +297,16 @@ public class ItemsModel {
     public long deleteShoppingLists() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        long numItemsDeleted = db.delete(ItemContract.ShoppingListEntry.TABLE_NAME, null, null);
+        long totalNumItemsDeleted = 0;
+
+        // Delete all shopping list items
+        totalNumItemsDeleted += db.delete(ItemContract.ItemEntry.TABLE_NAME, null, null);
+
+        // Delete all shopping lists
+        totalNumItemsDeleted += db.delete(ItemContract.ShoppingListEntry.TABLE_NAME, null, null);
+
         db.close();
-        return numItemsDeleted;
+        return totalNumItemsDeleted;
     }
 
     public int getNumberOfIncompleteItems(List<ShoppingListItem> shoppingListItems) {

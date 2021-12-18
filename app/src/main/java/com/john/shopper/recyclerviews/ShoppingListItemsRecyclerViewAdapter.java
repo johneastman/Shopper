@@ -96,6 +96,8 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                         items.remove(position);
                         items.add(newPosition, shoppingListItem);
 
+                        itemsModel.swapItems(items, position, newPosition);
+
                         notifyDataSetChanged();
                     }
                 });

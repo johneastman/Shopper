@@ -7,6 +7,8 @@
     <!-- menu items -->
     <string name="new_item_menu_title">Add New Item</string>
     <string name="clear_all_items">Clear All Items</string>
+    <string name="mark_all_items_as_complete">Set All to Complete</string>
+    <string name="mark_all_items_as_incomplete">Set All to Incomplete</string>
 
     <!-- new/update item dialog options -->
     <string name="new_item_cancel">Cancel</string>
