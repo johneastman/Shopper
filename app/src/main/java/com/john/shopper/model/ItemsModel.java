@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemsModel {
@@ -161,7 +162,7 @@ public class ItemsModel {
     }
 
     public long updateShoppingListItem(ShoppingListItem shoppingListItem) {
-        return updateShoppingListItems(Arrays.asList(shoppingListItem));
+        return updateShoppingListItems(Collections.singletonList(shoppingListItem));
     }
 
     public long updateShoppingListItems(List<ShoppingListItem> shoppingListItems) {

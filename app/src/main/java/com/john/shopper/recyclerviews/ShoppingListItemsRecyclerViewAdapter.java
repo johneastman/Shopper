@@ -97,6 +97,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                         items.add(newPosition, shoppingListItem);
 
                         itemsModel.swapItems(items, position, newPosition);
+                        itemsModel.updateShoppingListItem(shoppingListItem);
 
                         notifyDataSetChanged();
                     }
@@ -117,34 +118,8 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
+                addShoppingListItem(radioButtonsDataList, items);
 
-                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
-                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        EditText editText = newItemDialog.getEditText();
-                        Spinner spinner = newItemDialog.getSpinner();
-
-                        String itemName = editText.getText().toString();
-                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = newItemDialog.getQuantity();
-
-                        if (itemName.length() > 0) {
-                            int newItemPosition = newItemDialog.getNewItemPosition();
-                            long itemId = itemsModel.addItem(listId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
-
-                            ShoppingListItem shoppingListItem = new ShoppingListItem(itemId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), false, newItemPosition);
-                            items.add(newItemPosition, shoppingListItem);
-
-                            notifyDataSetChanged();
-                        }
-                    }
-                });
-                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                newItemDialog.setTitle(R.string.new_item_title);
-
-                Dialog dialog = newItemDialog.getDialog(null);
-                dialog.show();
             }
         });
 
@@ -224,6 +199,34 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
         notifyItemRemoved(position);
         notifyDataSetChanged();
+    }
+
+    public void addShoppingListItem(List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList, List<ShoppingListItem> items) {
+
+        final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+        newItemDialog.setPositiveButton(R.string.new_item_add, (dialog, id) -> {
+            EditText editText = newItemDialog.getEditText();
+            Spinner spinner = newItemDialog.getSpinner();
+
+            String itemName = editText.getText().toString();
+            String itemTypeDescriptor = spinner.getSelectedItem().toString();
+            int quantity = newItemDialog.getQuantity();
+
+            if (itemName.length() > 0) {
+                int newItemPosition = newItemDialog.getNewItemPosition();
+                long itemId = itemsModel.addItem(listId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
+
+                ShoppingListItem shoppingListItem1 = new ShoppingListItem(itemId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), false, newItemPosition);
+                items.add(newItemPosition, shoppingListItem1);
+
+                notifyDataSetChanged();
+            }
+        });
+        newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+        newItemDialog.setTitle(R.string.new_item_title);
+
+        Dialog dialog = newItemDialog.getDialog(null);
+        dialog.show();
     }
 
     public class ItemsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

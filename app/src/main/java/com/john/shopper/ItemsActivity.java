@@ -92,32 +92,7 @@ public class ItemsActivity extends AppCompatActivity {
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, shoppingListItems.size(), true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
-                final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(this, radioButtonsDataList);
-                newItemDialog.setPositiveButton(R.string.new_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        EditText editText = newItemDialog.getEditText();
-                        Spinner spinner = newItemDialog.getSpinner();
-                        String itemName = editText.getText().toString();
-                        String itemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = newItemDialog.getQuantity();
-
-                        if (itemName.length() > 0) {
-                            int newItemPosition = newItemDialog.getNewItemPosition();
-                            long itemId = itemsModel.addItem(listId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
-
-                            ShoppingListItem shoppingListItem = new ShoppingListItem(itemId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), false, newItemPosition);
-
-                            shoppingListItems.add(newItemPosition, shoppingListItem);
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-                newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                newItemDialog.setTitle(R.string.new_item_title);
-
-                Dialog dialog = newItemDialog.getDialog(null);
-                dialog.show();
+                mAdapter.addShoppingListItem(radioButtonsDataList, shoppingListItems);
                 return true;
             case R.id.clear_list:
                 shoppingListItems.clear();

@@ -39,7 +39,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
     @Before
     public void setup() {
 
-        cleanup();
+        cleanup(); // Run cleanup in case there is any stale data
 
         listId = model.insertShoppingList(SHOPPING_LIST_NAME);
 
@@ -58,12 +58,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
 
     @After
     public void cleanup() {
-
-        model.deleteItemsByShoppingListId(listId);
-
-        for (ShoppingList shoppingList : model.getShoppingLists()) {
-            model.deleteItem(shoppingList);
-        }
+        model.deleteShoppingLists();
     }
 
     @Test

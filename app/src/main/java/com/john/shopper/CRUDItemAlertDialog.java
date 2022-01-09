@@ -127,6 +127,8 @@ public class CRUDItemAlertDialog {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Sections do not have quantifies, so if the user is creating a section, do not
+                // display the option to set the quantity.
                 boolean isItemSection = spinner.getItemAtPosition(position).equals(ItemTypes.SECTION);
                 quantityLinearLayout.setVisibility(isItemSection ? View.GONE : View.VISIBLE);
             }
@@ -166,14 +168,11 @@ public class CRUDItemAlertDialog {
         });
 
         radioGroup = dialogView.findViewById(R.id.new_item_location_radio_group);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                for (RadioButtonData radioButtonData : radioButtonsDataList) {
-                    if (radioButtonData.getId() == checkedId) {
-                        newItemPosition = radioButtonData.getPosition();
-                        break;
-                    }
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            for (RadioButtonData radioButtonData : radioButtonsDataList) {
+                if (radioButtonData.getId() == checkedId) {
+                    newItemPosition = radioButtonData.getPosition();
+                    break;
                 }
             }
         });
