@@ -230,7 +230,7 @@ public class ShoppingListTest {
                                 hasDescendant(withText(itemToMove)),
                                 longClick()
                         )
-                )
+                );
     }
 
 
