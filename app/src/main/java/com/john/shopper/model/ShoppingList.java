@@ -1,48 +1,20 @@
 package com.john.shopper.model;
 
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-public class ShoppingList implements Item {
+@Entity(tableName = "shopping_lists")
+public class ShoppingList {
 
-    private long listId;
-    private int position;
-    private String name;
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "list_id")
+    public long listId;
 
+    public String name;
 
-    public ShoppingList(long listId, String name, int position) {
-        this.listId = listId;
-        this.name = name;
-        this.position = position;
-    }
-
-    @Override
-    public long getItemId() {
-        return listId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getTableName() {
-        return ItemContract.ShoppingListEntry.TABLE_NAME;
-    }
-
-    @Override
-    public String getIdColumn() {
-        return ItemContract.ShoppingListEntry._ID;
-    }
-
-    @Override
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    @Override
-    public int getPosition() {
-        return this.position;
-    }
+    public int position;
 
     @Override
     public boolean equals(@Nullable Object obj) {
@@ -52,8 +24,8 @@ public class ShoppingList implements Item {
 
         ShoppingList other = (ShoppingList) obj;
 
-        return  this.listId == other.getItemId() &&
-                this.name.equals(other.getName()) &&
-                this.position == other.getPosition();
+        return  this.listId == other.listId &&
+                this.name.equals(other.name) &&
+                this.position == other.position;
     }
 }

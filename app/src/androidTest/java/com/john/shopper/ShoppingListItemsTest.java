@@ -32,6 +32,7 @@ import java.util.List;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -170,7 +171,7 @@ public class ShoppingListItemsTest {
 
         boolean isAllItemsComplete = true;
         for (ShoppingListItem item : itemsModel.getItemsByListId(shoppingListId)) {
-            if (!item.isComplete()) {
+            if (!item.isComplete) {
                 isAllItemsComplete = false;
                 break;
             }
@@ -236,7 +237,7 @@ public class ShoppingListItemsTest {
 
         boolean isAllItemsIncomplete = true;
         for (ShoppingListItem item : itemsModel.getItemsByListId(shoppingListId)) {
-            if (item.isComplete()) {
+            if (item.isComplete) {
                 isAllItemsIncomplete = false;
                 break;
             }
@@ -244,11 +245,69 @@ public class ShoppingListItemsTest {
         assertTrue(isAllItemsIncomplete);
     }
 
+    @Test
+    public void testUpdateItemsOnMove() {
+
+        String itemToMove = "Carrots";
+
+        List<String> itemNames = new ArrayList<>();
+        itemNames.add(itemToMove);
+        itemNames.add("Celery");
+        itemNames.add("Ranch Dressing");
+
+        // Open add-shopping-list dialog
+        onView(withId(R.id.new_item)).perform(click());
+
+        // Add the Shopping List
+        onView(withId(R.id.new_shopping_list_name))
+                .perform(typeText(SHOPPING_LIST_NAME));
+
+        onView(withText("ADD"))
+                .perform(click());
+
+        // Navigate to shopping list items
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.actionOnItem(
+                                hasDescendant(withText(SHOPPING_LIST_NAME)),
+                                click()
+                        )
+                );
+
+        // Add Items
+        for (String itemName: itemNames) {
+
+            // Open add-item dialog
+            onView(withId(R.id.new_item)).perform(click());
+
+            // Enter name of item into text field
+            onView(withId(R.id.new_item_edit_text))
+                    .perform(typeText(itemName));
+
+            // Click add/ok dialog button
+            onView(withText("ADD"))
+                    .perform(click());
+        }
+
+        /* TODO: click and drag to move an item to a different position
+         * Find the pixel position of a cell:
+         * Use "drag" in this dependency: https://github.com/robotiumtech/robotium (have not
+         * confirmed if this will work).
+         */
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.actionOnItem(
+                                hasDescendant(withText(itemToMove)),
+                                longClick()
+                        )
+                );
+    }
+
     private long getShoppingListId() {
         List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
         for (ShoppingList shoppingList : shoppingLists) {
-            if (shoppingList.getName().equals(SHOPPING_LIST_NAME)) {
-                return shoppingList.getItemId();
+            if (shoppingList.name.equals(SHOPPING_LIST_NAME)) {
+                return shoppingList.listId;
             }
         }
         return -1;

@@ -21,14 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.shopper.CRUDItemAlertDialog;
 import com.john.shopper.ItemMoveCallback;
 import com.john.shopper.R;
-import com.john.shopper.model.Item;
-import com.john.shopper.model.ItemContract;
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingListItem;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListItemsRecyclerViewAdapter.ItemsViewHolder> implements ItemMoveCallback.ActionCompletionContract {
@@ -59,7 +56,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     @Override
     public void onBindViewHolder(@NonNull ItemsViewHolder holder, final int position) {
         final ShoppingListItem shoppingListItem = items.get(position);
-        holder.itemNameTextView.setText(shoppingListItem.getName());
+        holder.itemNameTextView.setText(shoppingListItem.name);
 
         holder.editItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +72,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        ShoppingListItem oldShoppingListItem = items.get(position);
+                        ShoppingListItem shoppingListItem = items.get(position);
 
                         EditText editText = editItemDialog.getEditText();
                         Spinner spinner = editItemDialog.getSpinner();
@@ -85,18 +82,16 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                         int quantity = editItemDialog.getQuantity();
                         int newPosition = editItemDialog.getNewItemPosition();
 
-                        ShoppingListItem shoppingListItem = new ShoppingListItem(
-                                oldShoppingListItem.getItemId(),
-                                newName,
-                                quantity,
-                                ItemTypes.isSection(newItemTypeDescriptor),
-                                oldShoppingListItem.isComplete(),
-                                newPosition);
+                        shoppingListItem.name = newName;
+                        shoppingListItem.quantity = quantity;
+                        shoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
+                        shoppingListItem.position = newPosition;
 
                         items.remove(position);
                         items.add(newPosition, shoppingListItem);
 
-                        itemsModel.swapItems(items, position, newPosition);
+                        // TODO: Swap with new Room model
+                        // itemsModel.swapItems(items, position, newPosition);
                         itemsModel.updateShoppingListItem(shoppingListItem);
 
                         notifyDataSetChanged();
@@ -123,7 +118,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             }
         });
 
-        String quantityString = mContext.getString(R.string.quantity_item_row_display, shoppingListItem.getQuantity());
+        String quantityString = mContext.getString(R.string.quantity_item_row_display, shoppingListItem.quantity);
 
         /* Display differences between sections and shoppingListItems
          *  1. The background color: Sections=Gray; Items=Default (White)
@@ -131,7 +126,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
          *     not present on shoppingListItems.
          *  3. Items display the quantity, while sections do not.
          */
-        if (shoppingListItem.isSection()) {
+        if (shoppingListItem.isSection) {
             // Background color
             holder.itemView.setBackgroundColor(Color.GRAY);
 
@@ -154,7 +149,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         }
 
         // Cross out completed shoppingListItems
-        if (shoppingListItem.isComplete()) {
+        if (shoppingListItem.isComplete) {
             holder.itemNameTextView.setPaintFlags(holder.itemNameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.itemNameTextView.setTypeface(null, Typeface.NORMAL);
 
@@ -188,11 +183,11 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
     @Override
     public void onViewSwiped(int position) {
-        Item item = items.get(position);
+        ShoppingListItem item = items.get(position);
         long numListsDel = itemsModel.deleteItem(item);
 
-        if (numListsDel > 0 && item.getTableName().equals(ItemContract.ShoppingListEntry.TABLE_NAME)) {
-            itemsModel.deleteItemsByShoppingListId(item.getItemId());
+        if (numListsDel > 0) {
+            itemsModel.deleteItemsByShoppingListId(item.id);
         }
 
         this.items.remove(position);
@@ -214,10 +209,15 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
             if (itemName.length() > 0) {
                 int newItemPosition = newItemDialog.getNewItemPosition();
-                long itemId = itemsModel.addItem(listId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), newItemPosition);
 
-                ShoppingListItem shoppingListItem1 = new ShoppingListItem(itemId, itemName, quantity, ItemTypes.isSection(itemTypeDescriptor), false, newItemPosition);
-                items.add(newItemPosition, shoppingListItem1);
+                ShoppingListItem shoppingListItem = new ShoppingListItem();
+                shoppingListItem.listId = listId;
+                shoppingListItem.name = itemName;
+                shoppingListItem.quantity = quantity;
+                shoppingListItem.isSection = ItemTypes.isSection(itemTypeDescriptor);
+                shoppingListItem.position = newItemPosition;
+                shoppingListItem.id = itemsModel.addItem(shoppingListItem);
+                items.add(newItemPosition, shoppingListItem);
 
                 notifyDataSetChanged();
             }
@@ -253,9 +253,9 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             ShoppingListItem selectedShoppingListItem = items.get(itemIndex);
 
             // Only allow shoppingListItems to be crossed off
-            if (!selectedShoppingListItem.isSection()) {
-                boolean newStatus = !selectedShoppingListItem.isComplete();
-                selectedShoppingListItem.setComplete(newStatus);
+            if (!selectedShoppingListItem.isSection) {
+                boolean newStatus = !selectedShoppingListItem.isComplete;
+                selectedShoppingListItem.isComplete = newStatus;
             }
 
             itemsModel.updateShoppingListItem(selectedShoppingListItem);

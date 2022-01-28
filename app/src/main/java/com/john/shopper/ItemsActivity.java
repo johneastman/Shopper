@@ -11,6 +11,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,6 +49,7 @@ public class ItemsActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getLong(LIST_ID);
+        Log.e("LIST_ID", String.valueOf(listId));
 
         shoppingListItems = itemsModel.getItemsByListId(listId);
 
@@ -127,7 +129,7 @@ public class ItemsActivity extends AppCompatActivity {
 
     private void setCompleteStatus(boolean isComplete) {
         for (ShoppingListItem item : shoppingListItems) {
-            item.setComplete(isComplete);
+            item.isComplete = isComplete;
         }
         itemsModel.updateShoppingListItems(shoppingListItems);
         mAdapter.notifyDataSetChanged();

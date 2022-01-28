@@ -116,7 +116,7 @@ public class CRUDItemAlertDialog {
 
         editText = dialogView.findViewById(R.id.new_item_edit_text);
         if (shoppingListItem != null) {
-            editText.setText(shoppingListItem.getName());
+            editText.setText(shoppingListItem.name);
         }
 
         spinner = dialogView.findViewById(R.id.new_item_spinner);
@@ -140,16 +140,16 @@ public class CRUDItemAlertDialog {
         });
 
         if (shoppingListItem != null) {
-            int spinnerPosition = adapter.getPosition(shoppingListItem.isSection() ? ItemTypes.SECTION : ItemTypes.ITEM);
+            int spinnerPosition = adapter.getPosition(shoppingListItem.isSection ? ItemTypes.SECTION : ItemTypes.ITEM);
             spinner.setSelection(spinnerPosition);
         }
 
         // Quantity
         quantityLinearLayout = dialogView.findViewById(R.id.quantity_setting);
-        quantityLinearLayout.setVisibility(shoppingListItem != null && shoppingListItem.isSection() ? View.GONE : View.VISIBLE);
+        quantityLinearLayout.setVisibility(shoppingListItem != null && shoppingListItem.isSection ? View.GONE : View.VISIBLE);
 
         quantityTextView = dialogView.findViewById(R.id.display_quantity);
-        setQuantity(shoppingListItem == null ? this.quantity : shoppingListItem.getQuantity());
+        setQuantity(shoppingListItem == null ? this.quantity : shoppingListItem.quantity);
 
         decreaseQuantityButton = dialogView.findViewById(R.id.decrease_qantity);
         decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {

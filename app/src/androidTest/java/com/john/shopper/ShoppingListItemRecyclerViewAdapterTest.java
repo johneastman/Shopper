@@ -41,14 +41,21 @@ public class ShoppingListItemRecyclerViewAdapterTest {
 
         cleanup(); // Run cleanup in case there is any stale data
 
-        listId = model.insertShoppingList(SHOPPING_LIST_NAME);
+        ShoppingList shoppingList = new ShoppingList();
+        shoppingList.name = SHOPPING_LIST_NAME;
+        listId = model.insertShoppingList(shoppingList);
 
         List<ShoppingListItem> items = new ArrayList<>();
         for (int i = 0; i < itemNames.size(); i++) {
             String name = itemNames.get(i);
 
-            long itemId = model.addItem(listId, name, 1, false, i);
-            ShoppingListItem shoppingListItem = new ShoppingListItem(itemId, name, 1, false, false, i);
+            ShoppingListItem shoppingListItem = new ShoppingListItem();
+            shoppingListItem.listId = listId;
+            shoppingListItem.name = name;
+            shoppingListItem.quantity = 1;
+            shoppingListItem.isSection = false;
+            shoppingListItem.position = i;
+            shoppingListItem.id = model.addItem(shoppingListItem);
 
             items.add(shoppingListItem);
         }
@@ -72,7 +79,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
         boolean itemNotPresent = true;
         for (ShoppingListItem item : updatedItems) {
-            if (item.getName().equals(itemNameToRemove)) {
+            if (item.name.equals(itemNameToRemove)) {
                 itemNotPresent = false;
             }
         }
@@ -87,7 +94,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
         List<String> expectedOrder = Arrays.asList("D", "A", "B", "C", "E");
         List<String> actualOrder = updatedItems.stream()
-                .map(ShoppingListItem::getName)
+                .map(shoppingListItem -> shoppingListItem.name)
                 .collect(Collectors.toList());
 
         assertEquals(expectedOrder, actualOrder);
@@ -100,7 +107,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
         List<String> expectedOrder = Arrays.asList("B", "C", "D", "A", "E");
         List<String> actualOrder = updatedItems.stream()
-                .map(ShoppingListItem::getName)
+                .map(shoppingListItem -> shoppingListItem.name)
                 .collect(Collectors.toList());
 
         assertEquals(expectedOrder, actualOrder);
@@ -113,7 +120,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         List<ShoppingListItem> updatedItems = model.getItemsByListId(listId);
         List<String> expectedOrder = Arrays.asList("A", "B", "C", "D", "E");
         List<String> actualOrder = updatedItems.stream()
-                .map(ShoppingListItem::getName)
+                .map(shoppingListItem -> shoppingListItem.name)
                 .collect(Collectors.toList());
 
         assertEquals(expectedOrder, actualOrder);

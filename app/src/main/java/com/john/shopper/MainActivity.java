@@ -85,8 +85,12 @@ public class MainActivity extends AppCompatActivity {
                                 String shoppingListName = editText.getText().toString();
 
                                 if (shoppingListName.length() > 0) {
-                                    long listID =  itemsModel.insertShoppingList(shoppingListName);
-                                    ShoppingList shoppingList = new ShoppingList(listID, shoppingListName, shoppingLists.size() + 1);
+
+                                    ShoppingList shoppingList = new ShoppingList();
+                                    shoppingList.name = shoppingListName;
+                                    shoppingList.position = shoppingLists.size() + 1;
+                                    shoppingList.listId = itemsModel.insertShoppingList(shoppingList);
+
                                     shoppingLists.add(shoppingList);
                                     mAdapter.notifyDataSetChanged();
                                 }

@@ -175,71 +175,12 @@ public class ShoppingListTest {
         assertFalse(isListInModel(SHOPPING_LIST_NAME));
     }
 
-    @Test
-    public void testUpdateItemsOnMove() {
-
-        String itemToMove = "Carrots";
-
-        List<String> itemNames = new ArrayList<>();
-        itemNames.add(itemToMove);
-        itemNames.add("Celery");
-        itemNames.add("Ranch Dressing");
-
-        // Open add-shopping-list dialog
-        onView(withId(R.id.new_item)).perform(click());
-
-        // Add the Shopping List
-        onView(withId(R.id.new_shopping_list_name))
-                .perform(typeText(SHOPPING_LIST_NAME));
-
-        onView(withText("ADD"))
-                .perform(click());
-
-        // Navigate to shopping list items
-        onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.actionOnItem(
-                                hasDescendant(withText(SHOPPING_LIST_NAME)),
-                                click()
-                        )
-                );
-
-        // Add Items
-        for (String itemName: itemNames) {
-
-            // Open add-item dialog
-            onView(withId(R.id.new_item)).perform(click());
-
-            // Enter name of item into text field
-            onView(withId(R.id.new_item_edit_text))
-                    .perform(typeText(itemName));
-
-            // Click add/ok dialog button
-            onView(withText("ADD"))
-                    .perform(click());
-        }
-
-        /* TODO: click and drag to move an item to a different position
-         * Find the pixel position of a cell:
-         * Use "drag" in this dependency: https://github.com/robotiumtech/robotium (have not
-         * confirmed if this will work).
-         */
-        onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.actionOnItem(
-                                hasDescendant(withText(itemToMove)),
-                                longClick()
-                        )
-                );
-    }
-
-
     private boolean isListInModel(String listName) {
         List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
 
         boolean shoppingListInModel = false;
         for (ShoppingList shoppingList : shoppingLists) {
-            if (shoppingList.getName().equals(listName)) {
+            if (shoppingList.name.equals(listName)) {
                 shoppingListInModel = true;
                 break;
             }

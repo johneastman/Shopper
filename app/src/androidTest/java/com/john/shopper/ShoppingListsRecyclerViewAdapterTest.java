@@ -38,8 +38,11 @@ public class ShoppingListsRecyclerViewAdapterTest {
 
             String shoppingListName = shoppingListNames.get(i);
 
-            long listId = model.insertShoppingList(shoppingListName);
-            ShoppingList shoppingList = new ShoppingList(listId, shoppingListName, i);
+            ShoppingList shoppingList = new ShoppingList();
+            shoppingList.name = shoppingListName;
+            shoppingList.position = i;
+
+            model.insertShoppingList(shoppingList);
             shoppingLists.add(shoppingList);
 
         }

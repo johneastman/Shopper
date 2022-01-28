@@ -12,13 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.shopper.ItemMoveCallback;
 import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
-import com.john.shopper.model.Item;
-import com.john.shopper.model.ItemContract;
 import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingList;
-import com.john.shopper.model.ShoppingListItem;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListsRecyclerViewAdapter.ShoppingListViewHolder> implements ItemMoveCallback.ActionCompletionContract {
@@ -50,7 +46,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     @Override
     public void onBindViewHolder(ShoppingListViewHolder holder, final int position) {
         ShoppingList shoppingList = this.items.get(position);
-        holder.shoppingListNameTextView.setText(shoppingList.getName());
+        holder.shoppingListNameTextView.setText(shoppingList.name);
     }
 
     // total number of rows
@@ -69,16 +65,17 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
 
-        itemsModel.swapItems(items, oldPosition, newPosition);
+        // TODO: Update to use Room model
+        // itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        Item item = items.get(position);
-        long numListsDel = itemsModel.deleteItem(item);
+        ShoppingList item = items.get(position);
+        long numListsDel = itemsModel.deleteShoppingList(item);
 
-        if (numListsDel > 0 && item.getTableName().equals(ItemContract.ShoppingListEntry.TABLE_NAME)) {
-            itemsModel.deleteItemsByShoppingListId(item.getItemId());
+        if (numListsDel > 0) {
+            itemsModel.deleteItemsByShoppingListId(item.listId);
         }
 
         this.items.remove(position);
@@ -104,7 +101,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
             ShoppingList shoppingList = items.get(position);
 
             Intent intent = new Intent(mContext, ItemsActivity.class);
-            intent.putExtra(ItemsActivity.LIST_ID, shoppingList.getItemId());
+            intent.putExtra(ItemsActivity.LIST_ID, shoppingList.listId);
             mContext.startActivity(intent);
         }
     }

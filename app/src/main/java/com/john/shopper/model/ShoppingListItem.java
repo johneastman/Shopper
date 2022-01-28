@@ -2,70 +2,31 @@ package com.john.shopper.model;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-public class ShoppingListItem implements Item {
+@Entity(tableName = "items")
+public class ShoppingListItem {
 
-    private long id;
-    private String name;
-    private int quantity;
-    private boolean isSection;
-    private boolean isComplete;
-    private int position;
+    @PrimaryKey(autoGenerate = true)
+    public long id;
 
+    @ColumnInfo(name = "list_id")
+    public long listId;
 
-    public ShoppingListItem(long id, String name, int quantity, boolean isSection, boolean isComplete, int position) {
-        this.id = id;
-        this.name = name;
-        this.quantity = quantity;
-        this.isSection = isSection;
-        this.position = position;
-        this.isComplete = isComplete;
-    }
+    @ColumnInfo(name = "name")
+    public String name;
 
-    public String getName() {
-        return this.name;
-    }
+    public int quantity;
 
-    public boolean isSection() {
-        return this.isSection;
-    }
+    @ColumnInfo(name = "is_complete")
+    public boolean isComplete;
 
-    public boolean isComplete() {
-        return isComplete;
-    }
+    @ColumnInfo(name = "is_section")
+    public boolean isSection;
 
-    public void setComplete(boolean complete) {
-        isComplete = complete;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    @Override
-    public long getItemId() {
-        return this.id;
-    }
-
-    @Override
-    public String getTableName() {
-        return ItemContract.ItemEntry.TABLE_NAME;
-    }
-
-    @Override
-    public String getIdColumn() {
-        return ItemContract.ItemEntry._ID;
-    }
-
-    @Override
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    @Override
-    public int getPosition() {
-        return this.position;
-    }
+    public int position;
 
     @Override
     public boolean equals(@Nullable Object obj) {
@@ -75,12 +36,12 @@ public class ShoppingListItem implements Item {
 
         ShoppingListItem other = (ShoppingListItem) obj;
 
-        return this.id == other.getItemId() &&
-               this.name.equals(other.getName()) &&
-               this.quantity == other.getQuantity() &&
-               this.isSection == other.isSection() &&
-               this.position == other.getPosition() &&
-               this.isComplete == other.isComplete();
+        return this.id == other.id &&
+               this.name.equals(other.name) &&
+               this.quantity == other.quantity &&
+               this.isSection == other.isSection &&
+               this.position == other.position &&
+               this.isComplete == other.isComplete;
     }
 
     @NonNull
