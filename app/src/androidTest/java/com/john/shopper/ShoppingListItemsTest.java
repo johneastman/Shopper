@@ -31,7 +31,9 @@ import java.util.List;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -77,6 +79,7 @@ public class ShoppingListItemsTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Select Shopping List
@@ -99,7 +102,8 @@ public class ShoppingListItemsTest {
             onView(withId(R.id.new_item_edit_text))
                     .perform(typeText(itemName));
 
-            onView(withText("ADD"))
+            onView(withId(android.R.id.button1))
+                    .perform(closeSoftKeyboard())
                     .perform(click());
         }
 
