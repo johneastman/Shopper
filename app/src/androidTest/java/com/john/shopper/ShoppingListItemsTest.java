@@ -3,6 +3,8 @@
  * Positive: android.R.id.button1
  * Negative: android.R.id.button2
  * Neutral: android.R.id.button3
+ *
+ * May need to call .perform(closeSoftKeyboard) if a UI element can't be found
  */
 package com.john.shopper;
 
