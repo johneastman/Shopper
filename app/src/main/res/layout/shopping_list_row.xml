@@ -11,6 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- This image button is purely for aesthetics, so if the user clicks on
+    the ImageButton in the recyclerview row, we want the selected shopping list to
+    be opened. We achieve this by setting android:clickable="false" -->
     <ImageButton
         android:id="@+id/navigate_to_list_icon"
         android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
@@ -18,6 +21,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:clickable="false"/>
 
 </RelativeLayout>
