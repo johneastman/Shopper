@@ -30,6 +30,7 @@ import java.util.List;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -72,6 +73,7 @@ public class ShoppingListTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Assert that the item is in the list
@@ -88,6 +90,7 @@ public class ShoppingListTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button2))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Assert that the item is not in the model because the "cancel" action on the dialog was
@@ -105,6 +108,7 @@ public class ShoppingListTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Remove the item by swiping left on it
@@ -135,6 +139,7 @@ public class ShoppingListTest {
                     .perform(typeText(shoppingListName));
 
             onView(withId(android.R.id.button1))
+                    .perform(closeSoftKeyboard())
                     .perform(click());
         }
 
@@ -162,6 +167,7 @@ public class ShoppingListTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Remove the item by swiping right on it

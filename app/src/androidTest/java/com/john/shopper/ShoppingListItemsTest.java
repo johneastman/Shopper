@@ -135,6 +135,7 @@ public class ShoppingListItemsTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Select Shopping List
@@ -158,6 +159,7 @@ public class ShoppingListItemsTest {
                     .perform(typeText(itemName));
 
             onView(withId(android.R.id.button1))
+                    .perform(closeSoftKeyboard())
                     .perform(click());
         }
 
@@ -195,6 +197,7 @@ public class ShoppingListItemsTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Select Shopping List
@@ -217,6 +220,7 @@ public class ShoppingListItemsTest {
                     .perform(typeText(itemName));
 
             onView(withId(android.R.id.button1))
+                    .perform(closeSoftKeyboard())
                     .perform(click());
 
             // Select item to mark as complete
@@ -266,6 +270,7 @@ public class ShoppingListItemsTest {
                 .perform(typeText(SHOPPING_LIST_NAME));
 
         onView(withId(android.R.id.button1))
+                .perform(closeSoftKeyboard())
                 .perform(click());
 
         // Navigate to shopping list items
@@ -289,6 +294,7 @@ public class ShoppingListItemsTest {
 
             // Click add/ok dialog button
             onView(withId(android.R.id.button1))
+                    .perform(closeSoftKeyboard())
                     .perform(click());
         }
 
