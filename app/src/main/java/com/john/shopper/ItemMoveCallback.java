@@ -21,13 +21,13 @@ public class ItemMoveCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-        contract.onViewMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        contract.onViewMoved(viewHolder.getAbsoluteAdapterPosition(), target.getAbsoluteAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-        contract.onViewSwiped(viewHolder.getAdapterPosition());
+        contract.onViewSwiped(viewHolder.getAbsoluteAdapterPosition());
     }
 
     public interface ActionCompletionContract {
