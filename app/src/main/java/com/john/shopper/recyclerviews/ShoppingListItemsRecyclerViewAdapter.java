@@ -58,51 +58,47 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         final ShoppingListItem shoppingListItem = items.get(position);
         holder.itemNameTextView.setText(shoppingListItem.name);
 
-        holder.editItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, items.size() - 1, false));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
+        holder.editItemButton.setOnClickListener(v -> {
+            List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+            radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_at_current_position, position, true));
+            radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, items.size() - 1, false));
+            radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
-                final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
+            final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
 
-                editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
+            editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
 
-                        ShoppingListItem shoppingListItem = items.get(position);
+                    ShoppingListItem shoppingListItem = items.get(position);
 
-                        EditText editText = editItemDialog.getEditText();
-                        Spinner spinner = editItemDialog.getSpinner();
+                    EditText editText = editItemDialog.getEditText();
+                    Spinner spinner = editItemDialog.getSpinner();
 
-                        String newName = editText.getText().toString();
-                        String newItemTypeDescriptor = spinner.getSelectedItem().toString();
-                        int quantity = editItemDialog.getQuantity();
-                        int newPosition = editItemDialog.getNewItemPosition();
+                    String newName = editText.getText().toString();
+                    String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+                    int quantity = editItemDialog.getQuantity();
+                    int newPosition = editItemDialog.getNewItemPosition();
 
-                        shoppingListItem.name = newName;
-                        shoppingListItem.quantity = quantity;
-                        shoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
-                        shoppingListItem.position = newPosition;
+                    shoppingListItem.name = newName;
+                    shoppingListItem.quantity = quantity;
+                    shoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
+                    shoppingListItem.position = newPosition;
 
-                        items.remove(position);
-                        items.add(newPosition, shoppingListItem);
+                    items.remove(position);
+                    items.add(newPosition, shoppingListItem);
 
-                        // TODO: Swap with new Room model
-                        // itemsModel.swapItems(items, position, newPosition);
-                        itemsModel.updateShoppingListItem(shoppingListItem);
+                    itemsModel.swapItems(items, position, newPosition);
+                    itemsModel.updateShoppingListItem(shoppingListItem);
 
-                        notifyDataSetChanged();
-                    }
-                });
-                editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
-                editItemDialog.setTitle(R.string.update_item_title);
+                    notifyDataSetChanged();
+                }
+            });
+            editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
+            editItemDialog.setTitle(R.string.update_item_title);
 
-                Dialog dialog = editItemDialog.getDialog(shoppingListItem);
-                dialog.show();
-            }
+            Dialog dialog = editItemDialog.getDialog(shoppingListItem);
+            dialog.show();
         });
 
         holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
@@ -249,13 +245,12 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
         @Override
         public void onClick(View view) {
-            int itemIndex = getAdapterPosition();
+            int itemIndex = getAbsoluteAdapterPosition();
             ShoppingListItem selectedShoppingListItem = items.get(itemIndex);
 
             // Only allow shoppingListItems to be crossed off
             if (!selectedShoppingListItem.isSection) {
-                boolean newStatus = !selectedShoppingListItem.isComplete;
-                selectedShoppingListItem.isComplete = newStatus;
+                selectedShoppingListItem.isComplete = !selectedShoppingListItem.isComplete;
             }
 
             itemsModel.updateShoppingListItem(selectedShoppingListItem);

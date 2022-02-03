@@ -15,17 +15,4 @@ public class ShoppingList {
     public String name;
 
     public int position;
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof ShoppingList)) {
-            return false;
-        }
-
-        ShoppingList other = (ShoppingList) obj;
-
-        return  this.listId == other.listId &&
-                this.name.equals(other.name) &&
-                this.position == other.position;
-    }
 }

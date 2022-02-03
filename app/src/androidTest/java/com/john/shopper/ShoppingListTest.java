@@ -24,18 +24,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
@@ -66,10 +62,6 @@ public class ShoppingListTest {
         itemsModel.deleteShoppingLists();
     }
 
-    /*
-    When: the user adds an item via the add-item dialog
-    Then: that item is added to the database and appears in the list
-     */
     @Test
     public void testAddingShoppingList() {
         // Add the item
@@ -86,10 +78,23 @@ public class ShoppingListTest {
         assertTrue(isListInModel(SHOPPING_LIST_NAME));
     }
 
-    /*
-    When: the user swipes left on an item
-    Then: the item is removed
-     */
+    @Test
+    public void testCancelAddingShoppingList() {
+        // Add the item
+        onView(withId(R.id.new_item))
+                .perform(click());
+
+        onView(withId(R.id.new_shopping_list_name))
+                .perform(typeText(SHOPPING_LIST_NAME));
+
+        onView(withText("CANCEL"))
+                .perform(click());
+
+        // Assert that the item is not in the model because the "cancel" action on the dialog was
+        // selected.
+        assertFalse(isListInModel(SHOPPING_LIST_NAME));
+    }
+
     @Test
     public void testRemoveShoppingListOnSwipeLeft() {
         // Add the item

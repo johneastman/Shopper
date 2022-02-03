@@ -28,22 +28,6 @@ public class ShoppingListItem {
 
     public int position;
 
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof ShoppingListItem)) {
-            return false;
-        }
-
-        ShoppingListItem other = (ShoppingListItem) obj;
-
-        return this.id == other.id &&
-               this.name.equals(other.name) &&
-               this.quantity == other.quantity &&
-               this.isSection == other.isSection &&
-               this.position == other.position &&
-               this.isComplete == other.isComplete;
-    }
-
     @NonNull
     @Override
     public String toString() {
