@@ -1,15 +1,14 @@
+/**
+ * For AlertDialogs:
+ * Positive: android.R.id.button1
+ * Negative: android.R.id.button2
+ * Neutral: android.R.id.button3
+ */
 package com.john.shopper;
 
 import android.app.Instrumentation;
 import android.content.Context;
-import android.util.Log;
 
-import androidx.test.espresso.action.GeneralClickAction;
-import androidx.test.espresso.action.GeneralLocation;
-import androidx.test.espresso.action.GeneralSwipeAction;
-import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.Swipe;
-import androidx.test.espresso.action.Tap;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -77,7 +76,7 @@ public class ShoppingListItemsTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Select Shopping List
@@ -131,7 +130,7 @@ public class ShoppingListItemsTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Select Shopping List
@@ -154,7 +153,7 @@ public class ShoppingListItemsTest {
             onView(withId(R.id.new_item_edit_text))
                     .perform(typeText(itemName));
 
-            onView(withText("ADD"))
+            onView(withId(android.R.id.button1))
                     .perform(click());
         }
 
@@ -191,7 +190,7 @@ public class ShoppingListItemsTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Select Shopping List
@@ -213,7 +212,7 @@ public class ShoppingListItemsTest {
             onView(withId(R.id.new_item_edit_text))
                     .perform(typeText(itemName));
 
-            onView(withText("ADD"))
+            onView(withId(android.R.id.button1))
                     .perform(click());
 
             // Select item to mark as complete
@@ -262,7 +261,7 @@ public class ShoppingListItemsTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Navigate to shopping list items
@@ -285,7 +284,7 @@ public class ShoppingListItemsTest {
                     .perform(typeText(itemName));
 
             // Click add/ok dialog button
-            onView(withText("ADD"))
+            onView(withId(android.R.id.button1))
                     .perform(click());
         }
 

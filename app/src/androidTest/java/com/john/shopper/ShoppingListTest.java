@@ -71,7 +71,7 @@ public class ShoppingListTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Assert that the item is in the list
@@ -87,7 +87,7 @@ public class ShoppingListTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("CANCEL"))
+        onView(withId(android.R.id.button2))
                 .perform(click());
 
         // Assert that the item is not in the model because the "cancel" action on the dialog was
@@ -104,7 +104,7 @@ public class ShoppingListTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Remove the item by swiping left on it
@@ -134,7 +134,7 @@ public class ShoppingListTest {
             onView(withId(R.id.new_shopping_list_name))
                     .perform(typeText(shoppingListName));
 
-            onView(withText("ADD"))
+            onView(withId(android.R.id.button1))
                     .perform(click());
         }
 
@@ -161,7 +161,7 @@ public class ShoppingListTest {
         onView(withId(R.id.new_shopping_list_name))
                 .perform(typeText(SHOPPING_LIST_NAME));
 
-        onView(withText("ADD"))
+        onView(withId(android.R.id.button1))
                 .perform(click());
 
         // Remove the item by swiping right on it
