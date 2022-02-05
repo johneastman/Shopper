@@ -10,6 +10,9 @@
 # Java class files
 *.class
 
+# Android Studio/Intellij IDE
+.idea/
+
 # Generated files
 bin/
 gen/
