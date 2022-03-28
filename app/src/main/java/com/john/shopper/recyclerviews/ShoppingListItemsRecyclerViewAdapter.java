@@ -62,7 +62,9 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
     // binds the data to the TextView in each row
     @Override
-    public void onBindViewHolder(@NonNull ItemsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+    public void onBindViewHolder(
+            @NonNull ItemsViewHolder holder,
+            @SuppressLint("RecyclerView") final int position) {
         final ShoppingListItem shoppingListItem = items.get(position);
         holder.itemNameTextView.setText(shoppingListItem.name);
 
@@ -74,33 +76,30 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
             final CRUDItemAlertDialog editItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
 
-            editItemDialog.setPositiveButton(R.string.update_item_add, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
+            editItemDialog.setPositiveButton(R.string.update_item_add, (dialog, id) -> {
 
-                    ShoppingListItem shoppingListItem = items.get(position);
+                ShoppingListItem shoppingListItem1 = items.get(position);
 
-                    EditText editText = editItemDialog.getEditText();
-                    Spinner spinner = editItemDialog.getSpinner();
+                EditText editText = editItemDialog.getEditText();
+                Spinner spinner = editItemDialog.getSpinner();
 
-                    String newName = editText.getText().toString();
-                    String newItemTypeDescriptor = spinner.getSelectedItem().toString();
-                    int quantity = editItemDialog.getQuantity();
-                    int newPosition = editItemDialog.getNewItemPosition();
+                String newName = editText.getText().toString();
+                String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+                int quantity = editItemDialog.getQuantity();
+                int newPosition = editItemDialog.getNewItemPosition();
 
-                    shoppingListItem.name = newName;
-                    shoppingListItem.quantity = quantity;
-                    shoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
-                    shoppingListItem.position = newPosition;
+                shoppingListItem1.name = newName;
+                shoppingListItem1.quantity = quantity;
+                shoppingListItem1.isSection = ItemTypes.isSection(newItemTypeDescriptor);
+                shoppingListItem1.position = newPosition;
 
-                    items.remove(position);
-                    items.add(newPosition, shoppingListItem);
+                items.remove(position);
+                items.add(newPosition, shoppingListItem1);
 
-                    itemsModel.swapItems(items, position, newPosition);
-                    itemsModel.updateShoppingListItem(shoppingListItem);
+                itemsModel.swapItems(items, position, newPosition);
+                itemsModel.updateShoppingListItem(shoppingListItem1);
 
-                    notifyDataSetChanged();
-                }
+                notifyDataSetChanged();
             });
             editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
             editItemDialog.setTitle(R.string.update_item_title);
@@ -166,7 +165,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         }
 
         // Display additional attributes of the item object if the value of developer mode is true
-        // TODO: Only get developer mode once so we are not calling this n times, where n == number of items in this shopping list
+        // TODO: Only get developer mode once so we are not calling this for every item in this shopping list
         boolean developerMode = mSettingsModel.getDeveloperMode();
         if (developerMode) {
             holder.developerModeDisplay.setVisibility(View.VISIBLE);
@@ -219,21 +218,18 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             String itemName = editText.getText().toString();
             String itemTypeDescriptor = spinner.getSelectedItem().toString();
             int quantity = newItemDialog.getQuantity();
+            int newItemPosition = newItemDialog.getNewItemPosition();
 
-            if (itemName.length() > 0) {
-                int newItemPosition = newItemDialog.getNewItemPosition();
+            ShoppingListItem shoppingListItem = new ShoppingListItem();
+            shoppingListItem.listId = listId;
+            shoppingListItem.name = itemName;
+            shoppingListItem.quantity = quantity;
+            shoppingListItem.isSection = ItemTypes.isSection(itemTypeDescriptor);
+            shoppingListItem.position = newItemPosition;
+            shoppingListItem.id = itemsModel.addItem(shoppingListItem);
+            items.add(newItemPosition, shoppingListItem);
 
-                ShoppingListItem shoppingListItem = new ShoppingListItem();
-                shoppingListItem.listId = listId;
-                shoppingListItem.name = itemName;
-                shoppingListItem.quantity = quantity;
-                shoppingListItem.isSection = ItemTypes.isSection(itemTypeDescriptor);
-                shoppingListItem.position = newItemPosition;
-                shoppingListItem.id = itemsModel.addItem(shoppingListItem);
-                items.add(newItemPosition, shoppingListItem);
-
-                notifyDataSetChanged();
-            }
+            notifyItemInserted(newItemPosition);
         });
         newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
         newItemDialog.setTitle(R.string.new_item_title);

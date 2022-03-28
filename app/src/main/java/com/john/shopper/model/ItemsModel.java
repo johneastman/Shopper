@@ -84,8 +84,7 @@ public class ItemsModel {
             }
 
             if (!items.isEmpty()) {
-                long numUpdated = this.updateShoppingListItems(items);
-                Log.e("NUM_UPDATED", String.valueOf(numUpdated));
+                this.updateShoppingListItems(items);
             }
         }
     }

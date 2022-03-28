@@ -21,6 +21,7 @@
     <string name="new_item_top_of_list">Top of List</string>
     <string name="new_item_bottom_of_list">Bottom of List</string>
     <string name="new_item_at_current_position">At Current Position</string>
+    <string name="update_item_name_empty_string_error_message">Item name must be at least one non-whitespace character</string>
 
     <!-- quantity -->
     <string name="quantity_label">Quantity</string>

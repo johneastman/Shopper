@@ -70,7 +70,6 @@ public class MainActivity extends BaseActivity {
         switch (item.getItemId()) {
             // New List Menu
             case R.id.new_item:
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = LayoutInflater.from(this);
                 final View dialogView = inflater.inflate(R.layout.add_shopping_list_dialog, null);
@@ -78,22 +77,18 @@ public class MainActivity extends BaseActivity {
                 builder.setView(dialogView);
                 builder.setPositiveButton(
                         R.string.new_item_add,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
-                                String shoppingListName = editText.getText().toString();
+                        (dialog, which) -> {
+                            EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
+                            String shoppingListName = editText.getText().toString();
 
-                                if (shoppingListName.length() > 0) {
+                            if (shoppingListName.length() > 0) {
+                                ShoppingList shoppingList = new ShoppingList();
+                                shoppingList.name = shoppingListName;
+                                shoppingList.position = shoppingLists.size() + 1;
+                                shoppingList.listId = itemsModel.insertShoppingList(shoppingList);
 
-                                    ShoppingList shoppingList = new ShoppingList();
-                                    shoppingList.name = shoppingListName;
-                                    shoppingList.position = shoppingLists.size() + 1;
-                                    shoppingList.listId = itemsModel.insertShoppingList(shoppingList);
-
-                                    shoppingLists.add(shoppingList);
-                                    mAdapter.notifyDataSetChanged();
-                                }
+                                shoppingLists.add(shoppingList);
+                                mAdapter.notifyItemInserted(shoppingLists.size() - 1);
                             }
                         });
                 builder.setNegativeButton(
