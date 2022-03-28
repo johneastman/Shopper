@@ -196,19 +196,11 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         items.remove(oldPosition);
         items.add(newPosition, item);
 
-        if (oldPosition != newPosition && !items.isEmpty()) {
-            int start = Math.min(oldPosition, newPosition);
-            int end = Math.max(oldPosition, newPosition);
+        notifyItemChanged(oldPosition);
+        notifyItemChanged(newPosition);
+        notifyItemMoved(oldPosition, newPosition);
 
-            // Update index of items
-            for (int i = start; i <= end; i++)
-            {
-                items.get(i).position = i;
-                notifyItemChanged(i);
-            }
-
-            itemsModel.updateShoppingListItems(items);
-        }
+        itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @SuppressLint("NotifyDataSetChanged")
