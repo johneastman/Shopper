@@ -29,10 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -87,8 +83,7 @@ public class ShoppingListItemsTest extends UITestHelper {
         }
 
         // Select clear-item menu item
-        openActionBarOverflowOrOptionsMenu(context); // Expand collapsed menu items
-        performClickWithText(R.string.clear_all_items);
+        performClickOnOverflowMenuItem(context, R.string.clear_all_items);
 
         // Assert that list of items is empty
         long shoppingListId = getShoppingListId(SHOPPING_LIST_NAME);
@@ -125,8 +120,7 @@ public class ShoppingListItemsTest extends UITestHelper {
         }
 
         // Select clear-item menu item
-        openActionBarOverflowOrOptionsMenu(context); // Expand collapsed menu items
-        performClickWithText(R.string.mark_all_items_as_complete);
+        performClickOnOverflowMenuItem(context, R.string.mark_all_items_as_complete);
 
         // Assert that all items are complete
         assertTrue(doAllItemsHaveSameCompleteStatus(SHOPPING_LIST_NAME, true));
@@ -160,8 +154,7 @@ public class ShoppingListItemsTest extends UITestHelper {
         }
 
         // Select clear-item menu item
-        openActionBarOverflowOrOptionsMenu(context); // Expand collapsed menu items
-        performClickWithText(R.string.mark_all_items_as_incomplete);
+        performClickOnOverflowMenuItem(context, R.string.mark_all_items_as_incomplete);
 
         // Assert that all items are incomplete
         assertTrue(doAllItemsHaveSameCompleteStatus(SHOPPING_LIST_NAME, false));
