@@ -1,12 +1,15 @@
 package com.john.shopper;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import android.content.Context;
 
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
@@ -22,6 +25,15 @@ public class UITestHelper {
 
     protected void performClickWithText(int stringResourceId) {
         onView(withText(stringResourceId)).perform(click());
+    }
+
+    /**
+     * Any menu items in the overflow menu (3 vertical dots) will require this method to be selected. Those items can only be
+     * selected by a string resource id (any string defined in strings.xml).
+     */
+    protected void performClickOnOverflowMenuItem(Context context, int stringResourceId) {
+        openActionBarOverflowOrOptionsMenu(context); // Expand collapsed menu items
+        performClickWithText(stringResourceId);
     }
 
     protected void inputText(int resourceId, String text) {

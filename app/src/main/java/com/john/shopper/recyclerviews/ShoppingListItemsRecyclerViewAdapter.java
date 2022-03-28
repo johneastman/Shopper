@@ -1,5 +1,6 @@
 package com.john.shopper.recyclerviews;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,17 +13,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.john.shopper.BaseActivity;
 import com.john.shopper.CRUDItemAlertDialog;
 import com.john.shopper.ItemMoveCallback;
+import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.SettingsModel;
 import com.john.shopper.model.ShoppingListItem;
 
 import java.util.ArrayList;
@@ -35,6 +41,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     private List<ShoppingListItem> items;
 
     private ItemsModel itemsModel;
+    private SettingsModel mSettingsModel;
 
     // data is passed into the constructor
     public ShoppingListItemsRecyclerViewAdapter(Context context, long listId, List<ShoppingListItem> items) {
@@ -43,6 +50,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         this.items = items;
         this.mInflater = LayoutInflater.from(context);
         this.itemsModel = new ItemsModel(context);
+        this.mSettingsModel = new SettingsModel(context);
     }
 
     // inflates the row layout from xml when needed
@@ -54,7 +62,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
     // binds the data to the TextView in each row
     @Override
-    public void onBindViewHolder(@NonNull ItemsViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ItemsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         final ShoppingListItem shoppingListItem = items.get(position);
         holder.itemNameTextView.setText(shoppingListItem.name);
 
@@ -156,6 +164,15 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
             holder.itemQuantityTextView.setPaintFlags(0);
         }
+
+        // Display additional attributes of the item object if the value of developer mode is true
+        // TODO: Only get developer mode once so we are not calling this n times, where n == number of items in this shopping list
+        boolean developerMode = mSettingsModel.getDeveloperMode();
+        if (developerMode) {
+            holder.developerModeDisplay.setVisibility(View.VISIBLE);
+        } else {
+            holder.developerModeDisplay.setVisibility(View.GONE);
+        }
     }
 
     // total number of rows
@@ -232,6 +249,8 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         ImageButton editItemButton;
         ImageButton sectionAddItemButton;
 
+        LinearLayout developerModeDisplay;
+
         public ItemsViewHolder(View itemView) {
             super(itemView);
 
@@ -239,6 +258,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             itemQuantityTextView = itemView.findViewById(R.id.item_quantity_text_view);
             editItemButton = itemView.findViewById(R.id.edit_item_button);
             sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
+            developerModeDisplay = itemView.findViewById(R.id.developer_mode_display);
 
             itemView.setOnClickListener(this);
         }

@@ -27,14 +27,6 @@ import org.junit.runner.RunWith;
 import java.util.Arrays;
 import java.util.List;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -129,8 +121,7 @@ public class ShoppingListTest extends UITestHelper {
         }
 
         // Select clear-item menu item
-        openActionBarOverflowOrOptionsMenu(context); // Expand collapsed menu items
-        performClickWithText(R.string.clear_all_items);
+        performClickOnOverflowMenuItem(context, R.string.clear_all_items);
 
         // Assert that list of shopping lists is empty
         List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
