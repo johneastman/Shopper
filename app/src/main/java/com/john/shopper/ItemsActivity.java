@@ -26,7 +26,7 @@ import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemsActivity extends AppCompatActivity {
+public class ItemsActivity extends BaseActivity {
 
     public static final String LIST_ID = "LIST_ID";
 
@@ -82,7 +82,7 @@ public class ItemsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.shopping_list_items_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
