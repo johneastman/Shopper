@@ -36,15 +36,11 @@ public class SettingsTest extends UITestHelper {
 
     @Before
     public void setup() {
-        this.cleanup();
+        this.teardown();
     }
 
     @After
     public void teardown() {
-        this.cleanup();
-    }
-
-    public void cleanup() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();

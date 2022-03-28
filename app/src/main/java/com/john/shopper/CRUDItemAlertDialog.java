@@ -167,6 +167,13 @@ public class CRUDItemAlertDialog {
             }
         });
 
+        /* When the user is choosing the position for a new item, the label above the radio buttons should say "Add item to",
+         * and when the user is editing an existing item, that label should say "Move item to".
+         */
+        TextView modifyItemPositionLabel = dialogView.findViewById(R.id.modify_item_position_label);
+        String modifyItemPositionLabelText = shoppingListItem != null ? context.getString(R.string.update_item_position) : context.getString(R.string.new_item_position);
+        modifyItemPositionLabel.setText(modifyItemPositionLabelText);
+
         radioGroup = dialogView.findViewById(R.id.new_item_location_radio_group);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             for (RadioButtonData radioButtonData : radioButtonsDataList) {

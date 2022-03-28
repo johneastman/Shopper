@@ -8,6 +8,10 @@
  */
 package com.john.shopper;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.app.Instrumentation;
 import android.content.Context;
 
@@ -242,6 +246,57 @@ public class ShoppingListItemsTest extends UITestHelper {
          * Use "drag" in this dependency: https://github.com/robotiumtech/robotium (have not
          * confirmed if this will work).
          */
+    }
+
+    /* When the user adds an item, they are shown a list of radio buttons that allow them to choose
+     * the position of the new item. The label above these radio buttons should indicate that the item
+     * is being added at the selected position.
+     */
+    @Test
+    public void testItemPositionLabelForAddingItem() {
+        // Add a shopping list
+        performClickWithId(R.id.new_item);
+        inputText(R.id.new_shopping_list_name, SHOPPING_LIST_NAME);
+        performClickWithId(android.R.id.button1);
+
+        // Select Shopping List
+        selectRecyclerViewRowByText(R.id.recycler_view, SHOPPING_LIST_NAME);
+
+        // Create Item in Shopping List
+        performClickWithId(R.id.new_item);
+
+        // Assert that the position label is correct
+        onView(withId(R.id.modify_item_position_label))
+                .check(matches(isEqualTo("Add Item To")));
+    }
+
+    /* When the user edits an item, they are shown a list of radio buttons that allow them to change
+     * the position of the item. The label above these radio buttons should indicate that the item
+     * is being moved.
+    */
+    @Test
+    public void testItemPositionLabelForEditingItem() {
+        // Add a shopping list
+        performClickWithId(R.id.new_item);
+        inputText(R.id.new_shopping_list_name, SHOPPING_LIST_NAME);
+        performClickWithId(android.R.id.button1);
+
+        // Select Shopping List
+        selectRecyclerViewRowByText(R.id.recycler_view, SHOPPING_LIST_NAME);
+
+        // Create Item in Shopping List
+        performClickWithId(R.id.new_item);
+
+        // Create the item
+        inputText(R.id.new_item_edit_text, "item name");
+        performClickWithId(android.R.id.button1);
+
+        // Open the edit-item dialog
+        performClickWithId(R.id.edit_item_button);
+
+        // Assert that the position label is correct
+        onView(withId(R.id.modify_item_position_label))
+                .check(matches(isEqualTo("Move Item To")));
     }
 
     private long getShoppingListId(String shoppingListName) {

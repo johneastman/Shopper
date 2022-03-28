@@ -17,10 +17,11 @@
     <string name="new_item_title">Add Item</string>
     <string name="update_item_add">Update</string>
     <string name="update_item_title">Update Item</string>
-    <string name="new_item_location_header">Move Item To</string>
+    <string name="update_item_position">Move Item To</string>
+    <string name="new_item_position">Add Item To</string>
     <string name="new_item_top_of_list">Top of List</string>
     <string name="new_item_bottom_of_list">Bottom of List</string>
-    <string name="new_item_at_current_position">At Current Position</string>
+    <string name="new_item_at_current_position">Current Position</string>
 
     <!-- quantity -->
     <string name="quantity_label">Quantity</string>
@@ -40,5 +41,12 @@
     <!-- Settings -->
     <string name="developer_mode_title">Developer Mode</string>
     <string name="developer_mode_checkbox_text">Developer Mode Enabled</string>
+
+    <!-- Shopping list item developer mode -->
+    <string name="item_id_value">Id: %d</string>
+    <string name="item_list_id_value">List Id: %d</string>
+    <string name="item_is_complete_value">Is Complete: %b</string>
+    <string name="item_is_section_value">Is Section: %b</string>
+    <string name="item_position_value">Position: %d</string>
 
 </resources>

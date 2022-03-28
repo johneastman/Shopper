@@ -61,6 +61,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     }
 
     // binds the data to the TextView in each row
+    @SuppressLint("StringFormatMatches")
     @Override
     public void onBindViewHolder(
             @NonNull ItemsViewHolder holder,
@@ -78,7 +79,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
             editItemDialog.setPositiveButton(R.string.update_item_add, (dialog, id) -> {
 
-                ShoppingListItem shoppingListItem1 = items.get(position);
+                ShoppingListItem updatedShoppingListItem = items.get(position);
 
                 EditText editText = editItemDialog.getEditText();
                 Spinner spinner = editItemDialog.getSpinner();
@@ -88,16 +89,16 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                 int quantity = editItemDialog.getQuantity();
                 int newPosition = editItemDialog.getNewItemPosition();
 
-                shoppingListItem1.name = newName;
-                shoppingListItem1.quantity = quantity;
-                shoppingListItem1.isSection = ItemTypes.isSection(newItemTypeDescriptor);
-                shoppingListItem1.position = newPosition;
+                updatedShoppingListItem.name = newName;
+                updatedShoppingListItem.quantity = quantity;
+                updatedShoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
+                updatedShoppingListItem.position = newPosition;
 
                 items.remove(position);
-                items.add(newPosition, shoppingListItem1);
+                items.add(newPosition, updatedShoppingListItem);
 
                 itemsModel.swapItems(items, position, newPosition);
-                itemsModel.updateShoppingListItem(shoppingListItem1);
+                itemsModel.updateShoppingListItem(updatedShoppingListItem);
 
                 notifyDataSetChanged();
             });
@@ -169,6 +170,12 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         boolean developerMode = mSettingsModel.getDeveloperMode();
         if (developerMode) {
             holder.developerModeDisplay.setVisibility(View.VISIBLE);
+
+            holder.developerModeItemIdText.setText(mContext.getString(R.string.item_id_value, shoppingListItem.id));
+            holder.developerModeItemListIdText.setText(mContext.getString(R.string.item_list_id_value, shoppingListItem.listId));
+            holder.developerModeItemIsCompleteText.setText(mContext.getString(R.string.item_is_complete_value, shoppingListItem.isComplete));
+            holder.developerModeItemIsSectionText.setText(mContext.getString(R.string.item_is_section_value, shoppingListItem.isSection));
+            holder.developerModeItemPositionText.setText(mContext.getString(R.string.item_position_value, shoppingListItem.position));
         } else {
             holder.developerModeDisplay.setVisibility(View.GONE);
         }
@@ -180,31 +187,43 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         return this.items.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
 
         ShoppingListItem item = items.get(oldPosition);
+
         items.remove(oldPosition);
         items.add(newPosition, item);
 
-        notifyItemChanged(oldPosition);
-        notifyItemMoved(oldPosition, newPosition);
+        if (oldPosition != newPosition && !items.isEmpty()) {
+            int start = Math.min(oldPosition, newPosition);
+            int end = Math.max(oldPosition, newPosition);
 
-        itemsModel.swapItems(items, oldPosition, newPosition);
+            // Update index of items
+            for (int i = start; i <= end; i++)
+            {
+                items.get(i).position = i;
+                notifyItemChanged(i);
+            }
+
+            itemsModel.updateShoppingListItems(items);
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewSwiped(int position) {
-        ShoppingListItem item = items.get(position);
-        long numListsDel = itemsModel.deleteItem(item);
+        itemsModel.deleteItem(items.get(position));
+        items.remove(position);
 
-        if (numListsDel > 0) {
-            itemsModel.deleteItemsByShoppingListId(item.id);
+        // Update the positions for all the items below the deleted item
+        for (int i = position; i < items.size(); i++) {
+            ShoppingListItem item = items.get(i);
+            item.position = i;
+            itemsModel.updateShoppingListItem(item);
         }
 
-        this.items.remove(position);
-
-        notifyItemRemoved(position);
         notifyDataSetChanged();
     }
 
@@ -246,6 +265,11 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         ImageButton sectionAddItemButton;
 
         LinearLayout developerModeDisplay;
+        TextView developerModeItemIdText;
+        TextView developerModeItemListIdText;
+        TextView developerModeItemIsCompleteText;
+        TextView developerModeItemIsSectionText;
+        TextView developerModeItemPositionText;
 
         public ItemsViewHolder(View itemView) {
             super(itemView);
@@ -254,15 +278,21 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             itemQuantityTextView = itemView.findViewById(R.id.item_quantity_text_view);
             editItemButton = itemView.findViewById(R.id.edit_item_button);
             sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
+
             developerModeDisplay = itemView.findViewById(R.id.developer_mode_display);
+            developerModeItemIdText = itemView.findViewById(R.id.item_id);
+            developerModeItemListIdText = itemView.findViewById(R.id.item_list_id);
+            developerModeItemIsCompleteText = itemView.findViewById(R.id.item_is_complete);
+            developerModeItemIsSectionText = itemView.findViewById(R.id.item_is_section);
+            developerModeItemPositionText = itemView.findViewById(R.id.item_position);
 
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            int itemIndex = getAbsoluteAdapterPosition();
-            ShoppingListItem selectedShoppingListItem = items.get(itemIndex);
+            int position = getAbsoluteAdapterPosition();
+            ShoppingListItem selectedShoppingListItem = items.get(position);
 
             // Only allow shoppingListItems to be crossed off
             if (!selectedShoppingListItem.isSection) {
@@ -270,7 +300,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             }
 
             itemsModel.updateShoppingListItem(selectedShoppingListItem);
-            notifyDataSetChanged();
+            notifyItemChanged(position);
         }
     }
 }

@@ -63,7 +63,7 @@
     </LinearLayout>
 
     <TextView
-        android:text="@string/new_item_location_header"
+        android:id="@+id/modify_item_position_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

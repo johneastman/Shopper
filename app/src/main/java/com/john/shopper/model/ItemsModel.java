@@ -73,19 +73,17 @@ public class ItemsModel {
 
     public void swapItems(List<ShoppingListItem> items, int oldPosition, int newPosition) {
 
-        if (oldPosition != newPosition) {
+        if (oldPosition != newPosition && !items.isEmpty()) {
             int start = Math.min(oldPosition, newPosition);
             int end = Math.max(oldPosition, newPosition);
 
             // Update index of items
-            for (int i = start; i < end + 1; i++)
+            for (int i = start; i <= end; i++)
             {
                 items.get(i).position = i;
             }
 
-            if (!items.isEmpty()) {
-                this.updateShoppingListItems(items);
-            }
+            updateShoppingListItems(items);
         }
     }
 

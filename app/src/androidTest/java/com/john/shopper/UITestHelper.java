@@ -10,12 +10,19 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 public class UITestHelper {
 
@@ -60,5 +67,25 @@ public class UITestHelper {
                         hasDescendant(withText(text)),
                         new GeneralSwipeAction(Swipe.FAST, start, end, Press.FINGER))
                 );
+    }
+
+    Matcher<View> isEqualTo(final String content) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Has TextView with the value " + content);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof TextView)) {
+                    return false;
+                }
+                String text = ((TextView) view).getText().toString();
+                return (text.equals(content));
+            }
+        };
     }
 }
