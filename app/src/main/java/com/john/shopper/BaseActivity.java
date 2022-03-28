@@ -1,6 +1,9 @@
 package com.john.shopper;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +30,5 @@ public class BaseActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
-
     }
 }
