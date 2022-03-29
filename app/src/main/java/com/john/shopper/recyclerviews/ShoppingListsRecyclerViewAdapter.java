@@ -13,7 +13,8 @@ import com.john.shopper.ItemMoveCallback;
 import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
 import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.jsonModel.JSONModel;
+import com.john.shopper.model.jsonModel.ShoppingList;
 
 import java.util.List;
 
@@ -21,9 +22,12 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     private LayoutInflater mInflater;
     private Context mContext;
+    // private List<ShoppingList> items;
     private List<ShoppingList> items;
 
     private ItemsModel itemsModel;
+    private JSONModel jsonModel;
+
 
     // data is passed into the constructor
     public ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
@@ -33,6 +37,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
         this.items = items;
 
         this.itemsModel = new ItemsModel(context);
+        this.jsonModel = new JSONModel(context);
     }
 
     // inflates the row layout from xml when needed
@@ -57,31 +62,20 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-
         ShoppingList item = items.get(oldPosition);
         items.remove(oldPosition);
         items.add(newPosition, item);
+        jsonModel.save(items);
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
-
-        // TODO: Update to use Room model
-        // itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        ShoppingList item = items.get(position);
-        long numListsDel = itemsModel.deleteShoppingList(item);
-
-        if (numListsDel > 0) {
-            itemsModel.deleteItemsByShoppingListId(item.listId);
-        }
-
         this.items.remove(position);
-
+        this.jsonModel.save(items);
         notifyItemRemoved(position);
-        notifyDataSetChanged();
     }
 
     // stores and recycles views as they are scrolled off screen

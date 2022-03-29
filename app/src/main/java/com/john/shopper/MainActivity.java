@@ -18,14 +18,18 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.jsonModel.ShoppingList;
+import com.john.shopper.model.jsonModel.JSONModel;
+import com.john.shopper.model.jsonModel.ShoppingListItem;
 import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
     ItemsModel itemsModel;
+    JSONModel jsonModel;
 
     RecyclerView recyclerView;
     ShoppingListsRecyclerViewAdapter mAdapter;
@@ -38,9 +42,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
-        itemsModel = new ItemsModel(getApplicationContext());
+        jsonModel  = new JSONModel(getApplicationContext());
 
-        shoppingLists = itemsModel.getShoppingLists();
+        shoppingLists = jsonModel.getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
@@ -81,15 +85,10 @@ public class MainActivity extends BaseActivity {
                             EditText editText = dialogView.findViewById(R.id.new_shopping_list_name);
                             String shoppingListName = editText.getText().toString();
 
-                            if (shoppingListName.length() > 0) {
-                                ShoppingList shoppingList = new ShoppingList();
-                                shoppingList.name = shoppingListName;
-                                shoppingList.position = shoppingLists.size() + 1;
-                                shoppingList.listId = itemsModel.insertShoppingList(shoppingList);
-
-                                shoppingLists.add(shoppingList);
-                                mAdapter.notifyItemInserted(shoppingLists.size() - 1);
-                            }
+                            ShoppingList shoppingList = new ShoppingList(shoppingListName, new ArrayList<>());
+                            shoppingLists.add(shoppingList);
+                            mAdapter.notifyItemInserted(shoppingLists.size() - 1);
+                            jsonModel.save();
                         });
                 builder.setNegativeButton(
                         R.string.new_item_cancel,

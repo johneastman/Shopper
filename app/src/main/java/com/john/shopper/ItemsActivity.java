@@ -21,7 +21,9 @@ import android.widget.Spinner;
 
 import com.john.shopper.model.ItemTypes;
 import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.ShoppingListItem;
+import com.john.shopper.model.jsonModel.JSONModel;
+import com.john.shopper.model.jsonModel.ShoppingList;
+import com.john.shopper.model.jsonModel.ShoppingListItem;
 import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -36,9 +38,10 @@ public class ItemsActivity extends BaseActivity {
     RecyclerView recyclerView;
     ShoppingListItemsRecyclerViewAdapter mAdapter;
 
-    long listId;
+    String listId;
 
     ItemsModel itemsModel;
+    private JSONModel jsonModel;
 
 
     @Override
@@ -47,12 +50,12 @@ public class ItemsActivity extends BaseActivity {
         setContentView(R.layout.activity_items);
 
         itemsModel = new ItemsModel(getApplicationContext());
+        jsonModel = new JSONModel(getApplicationContext());
 
         Bundle bundle = getIntent().getExtras();
-        listId = bundle.getLong(LIST_ID);
-        Log.e("LIST_ID", String.valueOf(listId));
+        listId = bundle.getString(LIST_ID);
 
-        shoppingListItems = itemsModel.getItemsByListId(listId);
+        shoppingListItems = jsonModel.getShoppingListItemsByListId(listId);
 
         recyclerView = findViewById(R.id.recycler_view);
 
@@ -106,7 +109,7 @@ public class ItemsActivity extends BaseActivity {
                 return true;
             case R.id.clear_list:
                 shoppingListItems.clear();
-                itemsModel.deleteItemsByShoppingListId(listId);
+                // itemsModel.deleteItemsByShoppingListId(listId);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.mark_all_items_as_complete:
@@ -121,7 +124,7 @@ public class ItemsActivity extends BaseActivity {
     }
 
     private void setActionBarSubTitle() {
-        int incompleteItemsCount = itemsModel.getNumberOfIncompleteItems(shoppingListItems);
+        int incompleteItemsCount = 0; // itemsModel.getNumberOfIncompleteItems(shoppingListItems);
         Resources res = getResources();
         String itemsSubTitleText = res.getQuantityString(
                 R.plurals.incompleted_items_count,
@@ -139,7 +142,8 @@ public class ItemsActivity extends BaseActivity {
         for (ShoppingListItem item : shoppingListItems) {
             item.isComplete = isComplete;
         }
-        itemsModel.updateShoppingListItems(shoppingListItems);
+
+        // itemsModel.updateShoppingListItems(shoppingListItems);
         mAdapter.notifyDataSetChanged();
     }
 }
