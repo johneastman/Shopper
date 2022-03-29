@@ -49,19 +49,16 @@ public class CRUDItemAlertDialog {
         }
     }
 
-    private Context context;
+    private final Context context;
     private EditText editText;
     private Spinner spinner;
     private RadioGroup radioGroup;
 
-    // Widgets for quantity
-    private Button decreaseQuantityButton;
     private TextView quantityTextView;
-    private Button increaseQuantityButton;
     private int quantity = 1;
     private View quantityLinearLayout;
 
-    private List<RadioButtonData> radioButtonsDataList;
+    private final List<RadioButtonData> radioButtonsDataList;
 
     private int titleResourceId;
     private int newItemPosition;
@@ -92,21 +89,20 @@ public class CRUDItemAlertDialog {
         this.negativeButtonAction = negativeButtonAction;
     }
 
-    public EditText getEditText() {
-        return this.editText;
-    }
-
-    public Spinner getSpinner() {
-        return this.spinner;
-    }
-
-    public int getQuantity()
-    {
+    public int getQuantity() {
         return this.quantity;
     }
 
     public int getNewItemPosition() {
         return this.newItemPosition;
+    }
+
+    public String getItemName() {
+        return editText.getText().toString();
+    }
+
+    public String getItemType() {
+        return spinner.getSelectedItem().toString();
     }
 
     public Dialog getDialog(ShoppingListItem shoppingListItem) {
@@ -151,7 +147,8 @@ public class CRUDItemAlertDialog {
         quantityTextView = dialogView.findViewById(R.id.display_quantity);
         setQuantity(shoppingListItem == null ? this.quantity : shoppingListItem.quantity);
 
-        decreaseQuantityButton = dialogView.findViewById(R.id.decrease_qantity);
+        // Widgets for quantity
+        Button decreaseQuantityButton = dialogView.findViewById(R.id.decrease_qantity);
         decreaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,7 +156,7 @@ public class CRUDItemAlertDialog {
             }
         });
 
-        increaseQuantityButton = dialogView.findViewById(R.id.increase_quantity);
+        Button increaseQuantityButton = dialogView.findViewById(R.id.increase_quantity);
         increaseQuantityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

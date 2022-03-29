@@ -60,7 +60,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         return new ItemsViewHolder(view);
     }
 
-    // binds the data to the TextView in each row
     @SuppressLint("StringFormatMatches")
     @Override
     public void onBindViewHolder(
@@ -81,11 +80,8 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
                 ShoppingListItem updatedShoppingListItem = items.get(position);
 
-                EditText editText = editItemDialog.getEditText();
-                Spinner spinner = editItemDialog.getSpinner();
-
-                String newName = editText.getText().toString();
-                String newItemTypeDescriptor = spinner.getSelectedItem().toString();
+                String newName = editItemDialog.getItemName();
+                String newItemTypeDescriptor = editItemDialog.getItemType();
                 int quantity = editItemDialog.getQuantity();
                 int newPosition = editItemDialog.getNewItemPosition();
 
@@ -109,17 +105,13 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             dialog.show();
         });
 
-        holder.sectionAddItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int bottomOfSectionPosition = itemsModel.getEndOfSectionPosition(position + 1, items);
+        holder.sectionAddItemButton.setOnClickListener(v -> {
+            int bottomOfSectionPosition = itemsModel.getEndOfSectionPosition(position + 1, items);
 
-                List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
-                addShoppingListItem(radioButtonsDataList, items);
-
-            }
+            List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
+            radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
+            radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
+            addShoppingListItem(radioButtonsDataList, items);
         });
 
         String quantityString = mContext.getString(R.string.quantity_item_row_display, shoppingListItem.quantity);
@@ -166,7 +158,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         }
 
         // Display additional attributes of the item object if the value of developer mode is true
-        // TODO: Only get developer mode once so we are not calling this for every item in this shopping list
+        // TODO: Only get developer mode once so we are not calling this for every item in the shopping list
         boolean developerMode = mSettingsModel.getDeveloperMode();
         if (developerMode) {
             holder.developerModeDisplay.setVisibility(View.VISIBLE);
@@ -187,7 +179,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         return this.items.size();
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
 
@@ -223,11 +214,8 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
         final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
         newItemDialog.setPositiveButton(R.string.new_item_add, (dialog, id) -> {
-            EditText editText = newItemDialog.getEditText();
-            Spinner spinner = newItemDialog.getSpinner();
-
-            String itemName = editText.getText().toString();
-            String itemTypeDescriptor = spinner.getSelectedItem().toString();
+            String itemName = newItemDialog.getItemName();
+            String itemTypeDescriptor = newItemDialog.getItemType();
             int quantity = newItemDialog.getQuantity();
             int newItemPosition = newItemDialog.getNewItemPosition();
 
