@@ -59,7 +59,7 @@ public class ItemsActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
 
-        mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId, shoppingListItems);
+        mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId);
 
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
