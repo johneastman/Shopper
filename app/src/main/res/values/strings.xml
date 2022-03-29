@@ -43,8 +43,8 @@
     <string name="developer_mode_checkbox_text">Developer Mode Enabled</string>
 
     <!-- Shopping list item developer mode -->
-    <string name="item_id_value">Id: %d</string>
-    <string name="item_list_id_value">List Id: %d</string>
+    <string name="item_id_value">Id: %s</string>
+    <string name="item_list_id_value">List Id: %s</string>
     <string name="item_is_complete_value">Is Complete: %b</string>
     <string name="item_is_section_value">Is Section: %b</string>
     <string name="item_position_value">Position: %d</string>

@@ -29,7 +29,6 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     ItemsModel itemsModel;
-    JSONModel jsonModel;
 
     RecyclerView recyclerView;
     ShoppingListsRecyclerViewAdapter mAdapter;
@@ -42,9 +41,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
-        jsonModel  = new JSONModel(getApplicationContext());
-
-        shoppingLists = jsonModel.getShoppingLists();
+        shoppingLists = JSONModel.getInstance(getApplicationContext()).getShoppingLists();
 
         recyclerView = findViewById(R.id.recycler_view);
         mAdapter = new ShoppingListsRecyclerViewAdapter(MainActivity.this, shoppingLists);
@@ -88,7 +85,7 @@ public class MainActivity extends BaseActivity {
                             ShoppingList shoppingList = new ShoppingList(shoppingListName, new ArrayList<>());
                             shoppingLists.add(shoppingList);
                             mAdapter.notifyItemInserted(shoppingLists.size() - 1);
-                            jsonModel.save();
+                            JSONModel.getInstance(getApplicationContext()).save();
                         });
                 builder.setNegativeButton(
                         R.string.new_item_cancel,

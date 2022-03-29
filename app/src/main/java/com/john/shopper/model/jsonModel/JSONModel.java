@@ -14,13 +14,22 @@ import java.util.List;
 
 public class JSONModel {
 
+    private static JSONModel instance = null;
+
     private static final String SHARED_PREFS_KEY = "shared_preferences";
     private static final String JSON_DATA_KEY = "data";
 
     private Context context;
     private List<ShoppingList> shoppingLists;
 
-    public JSONModel(Context context) {
+    public static JSONModel getInstance(Context context) {
+        if (instance == null) {
+            instance = new JSONModel(context);
+        }
+        return instance;
+    }
+
+    private JSONModel(Context context) {
         this.context = context;
         this.shoppingLists = this.load();
     }
@@ -71,11 +80,13 @@ public class JSONModel {
         this.save();
     }
 
-    public void save() {
-        this.save(shoppingLists);
+    public void deleteAllShoppingListItemsByListId(String listId) {
+        int shoppingListIndex = getShoppingListIndexByListId(listId);
+        shoppingLists.get(shoppingListIndex).items.clear();
+        this.save();
     }
 
-    public void save(List<ShoppingList> shoppingLists) {
+    public void save() {
         Gson gson = new Gson();
         String jsonData = gson.toJson(shoppingLists);
 

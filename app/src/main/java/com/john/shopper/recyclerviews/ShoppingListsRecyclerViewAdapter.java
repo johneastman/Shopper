@@ -25,19 +25,11 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // private List<ShoppingList> items;
     private List<ShoppingList> items;
 
-    private ItemsModel itemsModel;
-    private JSONModel jsonModel;
-
-
     // data is passed into the constructor
     public ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-
         this.items = items;
-
-        this.itemsModel = new ItemsModel(context);
-        this.jsonModel = new JSONModel(context);
     }
 
     // inflates the row layout from xml when needed
@@ -65,7 +57,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
         ShoppingList item = items.get(oldPosition);
         items.remove(oldPosition);
         items.add(newPosition, item);
-        jsonModel.save(items);
+        JSONModel.getInstance(mContext).save();
 
         notifyItemChanged(oldPosition);
         notifyItemMoved(oldPosition, newPosition);
@@ -74,7 +66,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     @Override
     public void onViewSwiped(int position) {
         this.items.remove(position);
-        this.jsonModel.save(items);
+        JSONModel.getInstance(mContext).save();
         notifyItemRemoved(position);
     }
 

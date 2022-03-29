@@ -33,34 +33,22 @@ public class ItemsActivity extends BaseActivity {
 
     public static final String LIST_ID = "LIST_ID";
 
-    List<ShoppingListItem> shoppingListItems;
-
     RecyclerView recyclerView;
     ShoppingListItemsRecyclerViewAdapter mAdapter;
 
     String listId;
-
-    ItemsModel itemsModel;
-    private JSONModel jsonModel;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
-        itemsModel = new ItemsModel(getApplicationContext());
-        jsonModel = new JSONModel(getApplicationContext());
-
         Bundle bundle = getIntent().getExtras();
         listId = bundle.getString(LIST_ID);
-
-        shoppingListItems = jsonModel.getShoppingListItemsByListId(listId);
 
         recyclerView = findViewById(R.id.recycler_view);
 
         mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId);
-
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -96,20 +84,23 @@ public class ItemsActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
+        // List<ShoppingListItem> shoppingListItems =
+
         switch (item.getItemId()) {
             case R.id.new_item:
+                int numItems = JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId).size();
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, shoppingListItems.size(), true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, numItems, true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
-                mAdapter.addShoppingListItem(radioButtonsDataList, shoppingListItems);
+                mAdapter.addShoppingListItem(radioButtonsDataList);
                 return true;
             case R.id.clear_list:
-                shoppingListItems.clear();
-                // itemsModel.deleteItemsByShoppingListId(listId);
+                JSONModel.getInstance(getApplicationContext()).deleteAllShoppingListItemsByListId(listId);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.mark_all_items_as_complete:
@@ -138,12 +129,12 @@ public class ItemsActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void setCompleteStatus(boolean isComplete) {
-        for (ShoppingListItem item : shoppingListItems) {
-            item.isComplete = isComplete;
+        for (ShoppingListItem shoppingListItem : JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId)) {
+            shoppingListItem.isComplete = isComplete;
+            JSONModel.getInstance(getApplicationContext()).updateShoppingListItem(listId, shoppingListItem);
         }
-
-        // itemsModel.updateShoppingListItems(shoppingListItems);
         mAdapter.notifyDataSetChanged();
     }
 }
