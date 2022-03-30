@@ -88,8 +88,6 @@ public class ItemsActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        // List<ShoppingListItem> shoppingListItems =
-
         switch (item.getItemId()) {
             case R.id.new_item:
                 int numItems = JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId).size();

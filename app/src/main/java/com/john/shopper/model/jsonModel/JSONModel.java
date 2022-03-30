@@ -44,6 +44,11 @@ public class JSONModel {
         return shoppingList == null ? new ArrayList<>() : shoppingList.items;
     }
 
+    public void addShoppingList(ShoppingList shoppingList) {
+        shoppingLists.add(shoppingList);
+        save();
+    }
+
     public void addShoppingListItem(String listId, ShoppingListItem shoppingListItem) {
         for (ShoppingList shoppingList : shoppingLists) {
             if (shoppingList.listId.equals(listId)) {
@@ -51,7 +56,7 @@ public class JSONModel {
                 break;
             }
         }
-        this.save();
+        save();
     }
 
     public void updateShoppingListItem(String listId, ShoppingListItem newShoppingListItem) {
@@ -60,15 +65,29 @@ public class JSONModel {
 
         int shoppingListItemIndex = getShoppingListItemIndexByItemId(newShoppingListItem.itemId, shoppingList);
         shoppingLists.get(shoppingListIndex).items.set(shoppingListItemIndex, newShoppingListItem);
-        this.save();
+        save();
+    }
+
+    public void swapShoppingLists(int oldPosition, int newPosition) {
+        ShoppingList shoppingList = shoppingLists.get(oldPosition);
+        shoppingLists.remove(oldPosition);
+        shoppingLists.add(newPosition, shoppingList);
+        save();
     }
 
     public void swapShoppingListItems(String listId, int oldPosition, int newPosition) {
         int shoppingListIndex = getShoppingListIndexByListId(listId);
         ShoppingList shoppingList = shoppingLists.get(shoppingListIndex);
 
-        Collections.swap(shoppingList.items, oldPosition, newPosition);
-        this.save();
+        ShoppingListItem shoppingListItem = shoppingList.items.get(oldPosition);
+        shoppingLists.get(shoppingListIndex).items.remove(oldPosition);
+        shoppingLists.get(shoppingListIndex).items.add(newPosition, shoppingListItem);
+        save();
+    }
+
+    public void deleteShoppingList(int position) {
+        shoppingLists.remove(position);
+        save();
     }
 
     public void deleteShoppingListItem(String listId, ShoppingListItem shoppingListItem) {
@@ -77,13 +96,27 @@ public class JSONModel {
 
         int shoppingListItemIndex = getShoppingListItemIndexByItemId(shoppingListItem.itemId, shoppingList);
         shoppingLists.get(shoppingListIndex).items.remove(shoppingListItemIndex);
-        this.save();
+        save();
     }
 
     public void deleteAllShoppingListItemsByListId(String listId) {
         int shoppingListIndex = getShoppingListIndexByListId(listId);
         shoppingLists.get(shoppingListIndex).items.clear();
-        this.save();
+        save();
+    }
+
+    public void deleteAllShoppingLists() {
+        shoppingLists.clear();
+        save();
+    }
+
+    public int getNumberOfShoppingLists() {
+        return shoppingLists.size();
+    }
+
+    public int getNumberOfItemsInShoppingList(String listId) {
+        int shoppingListIndex = getShoppingListIndexByListId(listId);
+        return shoppingLists.get(shoppingListIndex).items.size();
     }
 
     public void save() {

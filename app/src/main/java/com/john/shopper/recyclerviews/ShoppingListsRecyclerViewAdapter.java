@@ -22,14 +22,11 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
 
     private LayoutInflater mInflater;
     private Context mContext;
-    // private List<ShoppingList> items;
-    private List<ShoppingList> items;
 
     // data is passed into the constructor
-    public ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
+    public ShoppingListsRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-        this.items = items;
     }
 
     // inflates the row layout from xml when needed
@@ -42,31 +39,25 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ShoppingListViewHolder holder, final int position) {
-        ShoppingList shoppingList = this.items.get(position);
+        ShoppingList shoppingList = JSONModel.getInstance(mContext).getShoppingLists().get(position);
         holder.shoppingListNameTextView.setText(shoppingList.name);
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return this.items.size();
+        return JSONModel.getInstance(mContext).getNumberOfShoppingLists();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-        ShoppingList item = items.get(oldPosition);
-        items.remove(oldPosition);
-        items.add(newPosition, item);
-        JSONModel.getInstance(mContext).save();
-
-        notifyItemChanged(oldPosition);
+        JSONModel.getInstance(mContext).swapShoppingLists(oldPosition, newPosition);
         notifyItemMoved(oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        this.items.remove(position);
-        JSONModel.getInstance(mContext).save();
+        JSONModel.getInstance(mContext).deleteShoppingList(position);
         notifyItemRemoved(position);
     }
 
@@ -84,7 +75,7 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
         @Override
         public void onClick(View view) {
             int position = getLayoutPosition();
-            ShoppingList shoppingList = items.get(position);
+            ShoppingList shoppingList = JSONModel.getInstance(mContext).getShoppingLists().get(position);
 
             Intent intent = new Intent(mContext, ItemsActivity.class);
             intent.putExtra(ItemsActivity.LIST_ID, shoppingList.listId);

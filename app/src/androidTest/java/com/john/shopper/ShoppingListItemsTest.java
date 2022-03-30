@@ -19,9 +19,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.ShoppingList;
-import com.john.shopper.model.ShoppingListItem;
+import com.john.shopper.model.jsonModel.ShoppingList;
+import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.jsonModel.JSONModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,8 +44,6 @@ public class ShoppingListItemsTest extends UITestHelper {
     Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     Context context = inst.getTargetContext();
 
-    ItemsModel itemsModel = new ItemsModel(context);
-
     private static final String SHOPPING_LIST_NAME = "testList1";
 
     @Rule
@@ -59,7 +57,7 @@ public class ShoppingListItemsTest extends UITestHelper {
 
     @After
     public void cleanup() {
-        itemsModel.deleteShoppingLists();
+        JSONModel.getInstance(context).deleteAllShoppingLists();
     }
 
     /**
@@ -90,12 +88,12 @@ public class ShoppingListItemsTest extends UITestHelper {
         performClickOnOverflowMenuItem(context, R.string.clear_all_items);
 
         // Assert that list of items is empty
-        long shoppingListId = getShoppingListId(SHOPPING_LIST_NAME);
-        if (shoppingListId == -1) {
+        String shoppingListId = getShoppingListId(SHOPPING_LIST_NAME);
+        if (shoppingListId == null) {
             fail("No shopping list found. Shopping list id: " + shoppingListId);
         }
 
-        List<ShoppingListItem> shoppingListItems = itemsModel.getItemsByListId(shoppingListId);
+        List<ShoppingListItem> shoppingListItems = JSONModel.getInstance(context).getShoppingListItemsByListId(shoppingListId);
         assertEquals(0, shoppingListItems.size());
     }
 
@@ -299,18 +297,18 @@ public class ShoppingListItemsTest extends UITestHelper {
                 .check(matches(isEqualTo("Move Item To")));
     }
 
-    private long getShoppingListId(String shoppingListName) {
-        List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
-        long shoppingListId = -1;
+    private String getShoppingListId(String shoppingListName) {
+        List<ShoppingList> shoppingLists = JSONModel.getInstance(context).getShoppingLists();
+        String shoppingListId = null;
         for (ShoppingList shoppingList : shoppingLists) {
             if (shoppingList.name.equals(shoppingListName)) {
                 shoppingListId = shoppingList.listId;
             }
         }
 
-        if (shoppingListId == -1) {
+        if (shoppingListId == null) {
             String message = String.format(
-                    "No Shopping list found with name %s. Shopping list id: %d",
+                    "No Shopping list found with name %s. Shopping list id: %s",
                     SHOPPING_LIST_NAME, shoppingListId);
             fail(message);
         }
@@ -319,8 +317,8 @@ public class ShoppingListItemsTest extends UITestHelper {
     }
 
     private boolean isItemInShoppingList(String shoppingListName, String itemName) {
-        long listId = getShoppingListId(shoppingListName);
-        List<ShoppingListItem> items = itemsModel.getItemsByListId(listId);
+        String listId = getShoppingListId(shoppingListName);
+        List<ShoppingListItem> items = JSONModel.getInstance(context).getShoppingListItemsByListId(listId);
 
         for (ShoppingListItem item : items) {
             if (item.name.equals(itemName)) {
@@ -331,8 +329,8 @@ public class ShoppingListItemsTest extends UITestHelper {
     }
 
     private boolean doAllItemsHaveSameCompleteStatus(String shoppingListName, boolean isComplete) {
-        long shoppingListId = getShoppingListId(shoppingListName);
-        for (ShoppingListItem item : itemsModel.getItemsByListId(shoppingListId)) {
+        String shoppingListId = getShoppingListId(shoppingListName);
+        for (ShoppingListItem item : JSONModel.getInstance(context).getShoppingListItemsByListId(shoppingListId)) {
             if (item.isComplete != isComplete) {
                 return false;
             }

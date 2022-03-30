@@ -176,11 +176,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-
         JSONModel.getInstance(mContext).swapShoppingListItems(listId, oldPosition, newPosition);
-
-        notifyItemChanged(oldPosition);
-        notifyItemChanged(newPosition);
         notifyItemMoved(oldPosition, newPosition);
     }
 

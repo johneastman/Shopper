@@ -28,7 +28,6 @@ public class SettingsTest extends UITestHelper {
 
     Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     Context context = inst.getTargetContext();
-    SettingsModel settingsModel = new SettingsModel(context);
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
@@ -36,11 +35,11 @@ public class SettingsTest extends UITestHelper {
 
     @Before
     public void setup() {
-        this.teardown();
+        this.cleanup();
     }
 
     @After
-    public void teardown() {
+    public void cleanup() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
