@@ -1,14 +1,11 @@
 package com.john.shopper;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.CheckBox;
 
 import androidx.annotation.Nullable;
 
-import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.SettingsModel;
 
 public class SettingsActivity extends BaseActivity {

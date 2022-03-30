@@ -1,18 +1,16 @@
 package com.john.shopper.model;
 
-import androidx.annotation.Nullable;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-@Entity(tableName = "shopping_lists")
-public class ShoppingList {
-
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "list_id")
-    public long listId;
-
+public class ShoppingList implements Serializable {
     public String name;
+    public List<ShoppingListItem> items;
 
-    public int position;
+    public ShoppingList(String name, List<ShoppingListItem> items) {
+        this.name = name;
+        this.items = items == null ? new ArrayList<>() : items;
+    }
 }

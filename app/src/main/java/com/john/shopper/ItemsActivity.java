@@ -1,26 +1,20 @@
 package com.john.shopper;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.Spinner;
 
-import com.john.shopper.model.ItemTypes;
-import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.JSONModel;
+import com.john.shopper.model.ShoppingList;
 import com.john.shopper.model.ShoppingListItem;
 import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 
@@ -31,36 +25,48 @@ public class ItemsActivity extends BaseActivity {
 
     public static final String LIST_ID = "LIST_ID";
 
-    List<ShoppingListItem> shoppingListItems;
-
     RecyclerView recyclerView;
     ShoppingListItemsRecyclerViewAdapter mAdapter;
 
-    long listId;
-
-    ItemsModel itemsModel;
-
+    int listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items);
 
-        itemsModel = new ItemsModel(getApplicationContext());
-
         Bundle bundle = getIntent().getExtras();
-        listId = bundle.getLong(LIST_ID);
-        Log.e("LIST_ID", String.valueOf(listId));
-
-        shoppingListItems = itemsModel.getItemsByListId(listId);
+        listId = bundle.getInt(LIST_ID);
 
         recyclerView = findViewById(R.id.recycler_view);
 
-        mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId, shoppingListItems);
-
+        mAdapter = new ShoppingListItemsRecyclerViewAdapter(ItemsActivity.this, listId);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
+                // notifyDataSetChanged
+                super.onChanged();
+                setActionBarSubTitle();
+            }
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                // notifyItemInserted
+                super.onItemRangeInserted(positionStart, itemCount);
+                setActionBarSubTitle();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                // notifyItemRemoved
+                super.onItemRangeRemoved(positionStart, itemCount);
+                setActionBarSubTitle();
+            }
+
+            @Override
+            public void onItemRangeChanged(int positionStart, int itemCount) {
+                // notifyItemChanged
+                super.onItemRangeChanged(positionStart, itemCount);
                 setActionBarSubTitle();
             }
         });
@@ -72,16 +78,19 @@ public class ItemsActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(mAdapter);
 
-        // Add dividing lines to cells
+        // Add dividing lines between cells
         DividerItemDecoration itemDecor = new DividerItemDecoration(ItemsActivity.this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
 
+        setActionBarTitle();
         setActionBarSubTitle();
     }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onResume() {
+        // This ensures that data are properly displayed when changes are made to the settings. In this situation,
+        // additional information about each item is displayed when developer mode is turned on.
         super.onResume();
         mAdapter.notifyDataSetChanged();
     }
@@ -93,20 +102,21 @@ public class ItemsActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
         switch (item.getItemId()) {
             case R.id.new_item:
+                int numItems = JSONModel.getInstance(getApplicationContext()).getNumberOfItemsInShoppingList(listId);
                 List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
-                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, shoppingListItems.size(), true));
+                radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, numItems, true));
                 radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, 0, false));
 
-                mAdapter.addShoppingListItem(radioButtonsDataList, shoppingListItems);
+                mAdapter.addShoppingListItem(radioButtonsDataList);
                 return true;
             case R.id.clear_list:
-                shoppingListItems.clear();
-                itemsModel.deleteItemsByShoppingListId(listId);
+                JSONModel.getInstance(getApplicationContext()).deleteAllShoppingListItemsByListId(listId);
                 mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.mark_all_items_as_complete:
@@ -121,25 +131,40 @@ public class ItemsActivity extends BaseActivity {
     }
 
     private void setActionBarSubTitle() {
-        int incompleteItemsCount = itemsModel.getNumberOfIncompleteItems(shoppingListItems);
-        Resources res = getResources();
-        String itemsSubTitleText = res.getQuantityString(
-                R.plurals.incompleted_items_count,
-                incompleteItemsCount,
-                incompleteItemsCount
-        );
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            // Set the action bar to the number of incomplete items
+            int incompleteItemsCount = JSONModel.getInstance(getApplicationContext()).getNumberOfIncompleteShoppingListItems(listId);
+            Resources res = getResources();
+            String itemsSubTitleText = res.getQuantityString(
+                    R.plurals.incompleted_items_count,
+                    incompleteItemsCount,
+                    incompleteItemsCount
+            );
             actionBar.setSubtitle(itemsSubTitleText);
         }
     }
 
-    private void setCompleteStatus(boolean isComplete) {
-        for (ShoppingListItem item : shoppingListItems) {
-            item.isComplete = isComplete;
+    private void setActionBarTitle() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Set the title of the activity to the name of the shopping list
+            ShoppingList shoppingList = JSONModel.getInstance(getApplicationContext()).getShoppingListByListId(listId);
+            actionBar.setTitle(shoppingList.name);
         }
-        itemsModel.updateShoppingListItems(shoppingListItems);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void setCompleteStatus(boolean isComplete) {
+        List<ShoppingListItem> shoppingListItems =
+                JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId);
+
+        for (int i = 0; i < shoppingListItems.size(); i++) {
+            ShoppingListItem shoppingListItem = shoppingListItems.get(i);
+            shoppingListItem.isComplete = isComplete;
+
+            JSONModel.getInstance(getApplicationContext()).updateShoppingListItem(listId, i, shoppingListItem);
+        }
         mAdapter.notifyDataSetChanged();
     }
 }

@@ -1,7 +1,5 @@
 package com.john.shopper;
 
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -10,12 +8,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import androidx.test.espresso.matcher.PreferenceMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
-import com.john.shopper.model.SettingsModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +23,6 @@ public class SettingsTest extends UITestHelper {
 
     Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     Context context = inst.getTargetContext();
-    SettingsModel settingsModel = new SettingsModel(context);
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
@@ -36,11 +30,11 @@ public class SettingsTest extends UITestHelper {
 
     @Before
     public void setup() {
-        this.teardown();
+        this.cleanup();
     }
 
     @After
-    public void teardown() {
+    public void cleanup() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
