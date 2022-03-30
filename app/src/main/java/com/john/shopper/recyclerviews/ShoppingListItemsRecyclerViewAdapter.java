@@ -3,32 +3,25 @@ package com.john.shopper.recyclerviews;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.john.shopper.BaseActivity;
 import com.john.shopper.CRUDItemAlertDialog;
 import com.john.shopper.ItemMoveCallback;
-import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
 import com.john.shopper.model.ItemTypes;
-import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.SettingsModel;
+import com.john.shopper.model.JSONModel;
 import com.john.shopper.model.ShoppingListItem;
 
 import java.util.ArrayList;
@@ -37,19 +30,15 @@ import java.util.List;
 public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListItemsRecyclerViewAdapter.ItemsViewHolder> implements ItemMoveCallback.ActionCompletionContract {
     private LayoutInflater mInflater;
     private Context mContext;
-    private long listId;
-    private List<ShoppingListItem> items;
+    private int listId;
 
-    private ItemsModel itemsModel;
     private SettingsModel mSettingsModel;
 
     // data is passed into the constructor
-    public ShoppingListItemsRecyclerViewAdapter(Context context, long listId, List<ShoppingListItem> items) {
+    public ShoppingListItemsRecyclerViewAdapter(Context context, int listId) {
         this.mContext = context;
         this.listId = listId;
-        this.items = items;
         this.mInflater = LayoutInflater.from(context);
-        this.itemsModel = new ItemsModel(context);
         this.mSettingsModel = new SettingsModel(context);
     }
 
@@ -62,10 +51,10 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
     @SuppressLint("StringFormatMatches")
     @Override
-    public void onBindViewHolder(
-            @NonNull ItemsViewHolder holder,
-            @SuppressLint("RecyclerView") final int position) {
+    public void onBindViewHolder(@NonNull ItemsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+        List<ShoppingListItem> items = JSONModel.getInstance(mContext).getShoppingListItemsByListId(listId);
         final ShoppingListItem shoppingListItem = items.get(position);
+
         holder.itemNameTextView.setText(shoppingListItem.name);
 
         holder.editItemButton.setOnClickListener(v -> {
@@ -88,15 +77,13 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                 updatedShoppingListItem.name = newName;
                 updatedShoppingListItem.quantity = quantity;
                 updatedShoppingListItem.isSection = ItemTypes.isSection(newItemTypeDescriptor);
-                updatedShoppingListItem.position = newPosition;
 
                 items.remove(position);
                 items.add(newPosition, updatedShoppingListItem);
+                JSONModel.getInstance(mContext).updateShoppingListItem(listId, newPosition, updatedShoppingListItem);
 
-                itemsModel.swapItems(items, position, newPosition);
-                itemsModel.updateShoppingListItem(updatedShoppingListItem);
-
-                notifyDataSetChanged();
+                notifyItemMoved(position, newPosition);
+                notifyItemChanged(newPosition);
             });
             editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
             editItemDialog.setTitle(R.string.update_item_title);
@@ -106,12 +93,12 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         });
 
         holder.sectionAddItemButton.setOnClickListener(v -> {
-            int bottomOfSectionPosition = itemsModel.getEndOfSectionPosition(position + 1, items);
+            int bottomOfSectionPosition = items.size();
 
             List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList = new ArrayList<>();
             radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_bottom_of_list, bottomOfSectionPosition , true));
             radioButtonsDataList.add(new CRUDItemAlertDialog.RadioButtonData(R.string.new_item_top_of_list, position + 1, false));
-            addShoppingListItem(radioButtonsDataList, items);
+            addShoppingListItem(radioButtonsDataList);
         });
 
         String quantityString = mContext.getString(R.string.quantity_item_row_display, shoppingListItem.quantity);
@@ -163,11 +150,10 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         if (developerMode) {
             holder.developerModeDisplay.setVisibility(View.VISIBLE);
 
-            holder.developerModeItemIdText.setText(mContext.getString(R.string.item_id_value, shoppingListItem.id));
-            holder.developerModeItemListIdText.setText(mContext.getString(R.string.item_list_id_value, shoppingListItem.listId));
+            holder.developerModeItemListIdText.setText(mContext.getString(R.string.item_list_id_value, listId));
             holder.developerModeItemIsCompleteText.setText(mContext.getString(R.string.item_is_complete_value, shoppingListItem.isComplete));
             holder.developerModeItemIsSectionText.setText(mContext.getString(R.string.item_is_section_value, shoppingListItem.isSection));
-            holder.developerModeItemPositionText.setText(mContext.getString(R.string.item_position_value, shoppingListItem.position));
+            holder.developerModeItemPositionText.setText(mContext.getString(R.string.item_position_value, position));
         } else {
             holder.developerModeDisplay.setVisibility(View.GONE);
         }
@@ -176,41 +162,23 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     // total number of rows
     @Override
     public int getItemCount() {
-        return this.items.size();
+        return JSONModel.getInstance(mContext).getShoppingListItemsByListId(listId).size();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-
-        ShoppingListItem item = items.get(oldPosition);
-
-        items.remove(oldPosition);
-        items.add(newPosition, item);
-
-        notifyItemChanged(oldPosition);
-        notifyItemChanged(newPosition);
+        JSONModel.getInstance(mContext).swapShoppingListItems(listId, oldPosition, newPosition);
         notifyItemMoved(oldPosition, newPosition);
-
-        itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewSwiped(int position) {
-        itemsModel.deleteItem(items.get(position));
-        items.remove(position);
-
-        // Update the positions for all the items below the deleted item
-        for (int i = position; i < items.size(); i++) {
-            ShoppingListItem item = items.get(i);
-            item.position = i;
-            itemsModel.updateShoppingListItem(item);
-        }
-
-        notifyDataSetChanged();
+        JSONModel.getInstance(mContext).deleteShoppingListItem(listId, position);
+        notifyItemRemoved(position);
     }
 
-    public void addShoppingListItem(List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList, List<ShoppingListItem> items) {
+    public void addShoppingListItem(List<CRUDItemAlertDialog.RadioButtonData> radioButtonsDataList) {
 
         final CRUDItemAlertDialog newItemDialog = new CRUDItemAlertDialog(mContext, radioButtonsDataList);
         newItemDialog.setPositiveButton(R.string.new_item_add, (dialog, id) -> {
@@ -219,15 +187,13 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             int quantity = newItemDialog.getQuantity();
             int newItemPosition = newItemDialog.getNewItemPosition();
 
-            ShoppingListItem shoppingListItem = new ShoppingListItem();
-            shoppingListItem.listId = listId;
-            shoppingListItem.name = itemName;
-            shoppingListItem.quantity = quantity;
-            shoppingListItem.isSection = ItemTypes.isSection(itemTypeDescriptor);
-            shoppingListItem.position = newItemPosition;
-            shoppingListItem.id = itemsModel.addItem(shoppingListItem);
-            items.add(newItemPosition, shoppingListItem);
-
+            ShoppingListItem shoppingListItem = new ShoppingListItem(
+                    itemName,
+                    quantity,
+                    false,
+                    ItemTypes.isSection(itemTypeDescriptor)
+            );
+            JSONModel.getInstance(mContext).addShoppingListItem(listId, shoppingListItem);
             notifyItemInserted(newItemPosition);
         });
         newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
@@ -245,7 +211,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         ImageButton sectionAddItemButton;
 
         LinearLayout developerModeDisplay;
-        TextView developerModeItemIdText;
         TextView developerModeItemListIdText;
         TextView developerModeItemIsCompleteText;
         TextView developerModeItemIsSectionText;
@@ -260,7 +225,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
 
             developerModeDisplay = itemView.findViewById(R.id.developer_mode_display);
-            developerModeItemIdText = itemView.findViewById(R.id.item_id);
             developerModeItemListIdText = itemView.findViewById(R.id.item_list_id);
             developerModeItemIsCompleteText = itemView.findViewById(R.id.item_is_complete);
             developerModeItemIsSectionText = itemView.findViewById(R.id.item_is_section);
@@ -272,6 +236,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         @Override
         public void onClick(View view) {
             int position = getAbsoluteAdapterPosition();
+            List<ShoppingListItem> items = JSONModel.getInstance(mContext).getShoppingListItemsByListId(listId);
             ShoppingListItem selectedShoppingListItem = items.get(position);
 
             // Only allow shoppingListItems to be crossed off
@@ -279,7 +244,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                 selectedShoppingListItem.isComplete = !selectedShoppingListItem.isComplete;
             }
 
-            itemsModel.updateShoppingListItem(selectedShoppingListItem);
             notifyItemChanged(position);
         }
     }

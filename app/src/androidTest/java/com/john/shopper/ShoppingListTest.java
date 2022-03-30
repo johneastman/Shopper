@@ -2,21 +2,13 @@ package com.john.shopper;
 
 import android.app.Instrumentation;
 import android.content.Context;
-import android.os.SystemClock;
-import android.view.MotionEvent;
 
-import androidx.test.espresso.action.GeneralLocation;
-import androidx.test.espresso.action.GeneralSwipeAction;
-import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.Swipe;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.JSONModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,8 +29,6 @@ public class ShoppingListTest extends UITestHelper {
     Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     Context context = inst.getTargetContext();
 
-    ItemsModel itemsModel = new ItemsModel(context);
-
     private static final String SHOPPING_LIST_NAME = "testList1";
 
     @Rule
@@ -52,7 +42,7 @@ public class ShoppingListTest extends UITestHelper {
 
     @After
     public void cleanup() {
-        itemsModel.deleteShoppingLists();
+        JSONModel.getInstance(context).deleteAllShoppingLists();
     }
 
     @Test
@@ -124,12 +114,12 @@ public class ShoppingListTest extends UITestHelper {
         performClickOnOverflowMenuItem(context, R.string.clear_all_items);
 
         // Assert that list of shopping lists is empty
-        List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
+        List<ShoppingList> shoppingLists = JSONModel.getInstance(context).getShoppingLists();
         assertEquals(0, shoppingLists.size());
     }
 
     private boolean isListInModel(String listName) {
-        List<ShoppingList> shoppingLists = itemsModel.getShoppingLists();
+        List<ShoppingList> shoppingLists = JSONModel.getInstance(context).getShoppingLists();
 
         boolean shoppingListInModel = false;
         for (ShoppingList shoppingList : shoppingLists) {

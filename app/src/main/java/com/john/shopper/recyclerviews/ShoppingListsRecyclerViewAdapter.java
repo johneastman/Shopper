@@ -12,27 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.shopper.ItemMoveCallback;
 import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
-import com.john.shopper.model.ItemsModel;
+import com.john.shopper.model.JSONModel;
 import com.john.shopper.model.ShoppingList;
-
-import java.util.List;
 
 public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListsRecyclerViewAdapter.ShoppingListViewHolder> implements ItemMoveCallback.ActionCompletionContract {
 
     private LayoutInflater mInflater;
     private Context mContext;
-    private List<ShoppingList> items;
-
-    private ItemsModel itemsModel;
 
     // data is passed into the constructor
-    public ShoppingListsRecyclerViewAdapter(Context context, List<ShoppingList> items) {
+    public ShoppingListsRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.mContext = context;
-
-        this.items = items;
-
-        this.itemsModel = new ItemsModel(context);
     }
 
     // inflates the row layout from xml when needed
@@ -45,43 +36,26 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ShoppingListViewHolder holder, final int position) {
-        ShoppingList shoppingList = this.items.get(position);
+        ShoppingList shoppingList = JSONModel.getInstance(mContext).getShoppingLists().get(position);
         holder.shoppingListNameTextView.setText(shoppingList.name);
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return this.items.size();
+        return JSONModel.getInstance(mContext).getNumberOfShoppingLists();
     }
 
     @Override
     public void onViewMoved(int oldPosition, int newPosition) {
-
-        ShoppingList item = items.get(oldPosition);
-        items.remove(oldPosition);
-        items.add(newPosition, item);
-
-        notifyItemChanged(oldPosition);
+        JSONModel.getInstance(mContext).swapShoppingLists(oldPosition, newPosition);
         notifyItemMoved(oldPosition, newPosition);
-
-        // TODO: Update to use Room model
-        // itemsModel.swapItems(items, oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        ShoppingList item = items.get(position);
-        long numListsDel = itemsModel.deleteShoppingList(item);
-
-        if (numListsDel > 0) {
-            itemsModel.deleteItemsByShoppingListId(item.listId);
-        }
-
-        this.items.remove(position);
-
+        JSONModel.getInstance(mContext).deleteShoppingList(position);
         notifyItemRemoved(position);
-        notifyDataSetChanged();
     }
 
     // stores and recycles views as they are scrolled off screen
@@ -98,10 +72,9 @@ public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<Shopp
         @Override
         public void onClick(View view) {
             int position = getLayoutPosition();
-            ShoppingList shoppingList = items.get(position);
 
             Intent intent = new Intent(mContext, ItemsActivity.class);
-            intent.putExtra(ItemsActivity.LIST_ID, shoppingList.listId);
+            intent.putExtra(ItemsActivity.LIST_ID, position);
             mContext.startActivity(intent);
         }
     }

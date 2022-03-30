@@ -1,4 +1,4 @@
-package com.john.shopper.model;
+package com.john.shopper.model.old;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;

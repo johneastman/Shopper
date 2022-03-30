@@ -1,13 +1,8 @@
-package com.john.shopper.model;
+package com.john.shopper.model.old;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import androidx.room.Room;
 
-import com.john.shopper.BaseActivity;
-import com.john.shopper.SettingsActivity;
+import androidx.room.Room;
 
 import java.util.List;
 
