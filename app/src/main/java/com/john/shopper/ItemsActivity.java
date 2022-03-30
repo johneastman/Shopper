@@ -1,29 +1,20 @@
 package com.john.shopper;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.Spinner;
 
-import com.john.shopper.model.ItemTypes;
-import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.jsonModel.JSONModel;
-import com.john.shopper.model.jsonModel.ShoppingList;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.JSONModel;
+import com.john.shopper.model.ShoppingListItem;
 import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -63,7 +54,7 @@ public class ItemsActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(mAdapter);
 
-        // Add dividing lines to cells
+        // Add dividing lines between cells
         DividerItemDecoration itemDecor = new DividerItemDecoration(ItemsActivity.this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
 
@@ -73,6 +64,8 @@ public class ItemsActivity extends BaseActivity {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     protected void onResume() {
+        // This ensures that data are properly displayed when changes are made to the settings. In this situation,
+        // additional information about each item is displayed when developer mode is turned on.
         super.onResume();
         mAdapter.notifyDataSetChanged();
     }
@@ -129,7 +122,10 @@ public class ItemsActivity extends BaseActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void setCompleteStatus(boolean isComplete) {
-        for (ShoppingListItem shoppingListItem : JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId)) {
+        List<ShoppingListItem> shoppingListItems =
+                JSONModel.getInstance(getApplicationContext()).getShoppingListItemsByListId(listId);
+
+        for (ShoppingListItem shoppingListItem : shoppingListItems) {
             shoppingListItem.isComplete = isComplete;
             JSONModel.getInstance(getApplicationContext()).updateShoppingListItem(listId, shoppingListItem);
         }

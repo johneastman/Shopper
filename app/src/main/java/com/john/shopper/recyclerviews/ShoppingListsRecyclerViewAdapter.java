@@ -12,11 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.shopper.ItemMoveCallback;
 import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
-import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.jsonModel.JSONModel;
-import com.john.shopper.model.jsonModel.ShoppingList;
-
-import java.util.List;
+import com.john.shopper.model.JSONModel;
+import com.john.shopper.model.ShoppingList;
 
 public class ShoppingListsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListsRecyclerViewAdapter.ShoppingListViewHolder> implements ItemMoveCallback.ActionCompletionContract {
 

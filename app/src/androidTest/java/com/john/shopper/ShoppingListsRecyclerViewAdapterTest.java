@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.john.shopper.model.jsonModel.JSONModel;
-import com.john.shopper.model.jsonModel.ShoppingList;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.JSONModel;
+import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.ShoppingListItem;
 import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
 
 import org.junit.After;

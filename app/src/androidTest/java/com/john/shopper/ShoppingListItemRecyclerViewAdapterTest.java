@@ -5,10 +5,9 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.jsonModel.ShoppingList;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
-import com.john.shopper.model.jsonModel.JSONModel;
+import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.ShoppingListItem;
+import com.john.shopper.model.JSONModel;
 import com.john.shopper.recyclerviews.ShoppingListItemsRecyclerViewAdapter;
 
 import org.junit.After;
@@ -18,7 +17,6 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

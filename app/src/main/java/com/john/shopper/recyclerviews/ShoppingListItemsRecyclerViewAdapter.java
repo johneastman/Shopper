@@ -3,38 +3,29 @@ package com.john.shopper.recyclerviews;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.john.shopper.BaseActivity;
 import com.john.shopper.CRUDItemAlertDialog;
 import com.john.shopper.ItemMoveCallback;
-import com.john.shopper.ItemsActivity;
 import com.john.shopper.R;
 import com.john.shopper.model.ItemTypes;
-import com.john.shopper.model.ItemsModel;
 import com.john.shopper.model.SettingsModel;
-import com.john.shopper.model.jsonModel.JSONModel;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.JSONModel;
+import com.john.shopper.model.ShoppingListItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarInputStream;
 
 public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListItemsRecyclerViewAdapter.ItemsViewHolder> implements ItemMoveCallback.ActionCompletionContract {
     private LayoutInflater mInflater;
@@ -183,10 +174,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewSwiped(int position) {
-        List<ShoppingListItem> items = JSONModel.getInstance(mContext).getShoppingListItemsByListId(listId);
-        ShoppingListItem shoppingListItem = items.get(position);
-        JSONModel.getInstance(mContext).deleteShoppingListItem(listId, shoppingListItem);
-
+        JSONModel.getInstance(mContext).deleteShoppingListItem(listId, position);
         notifyItemRemoved(position);
     }
 

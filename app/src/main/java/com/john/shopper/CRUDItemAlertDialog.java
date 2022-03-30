@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import com.john.shopper.model.ItemTypes;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.ShoppingListItem;
 
 import java.util.List;
 

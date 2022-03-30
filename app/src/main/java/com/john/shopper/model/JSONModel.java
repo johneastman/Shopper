@@ -1,4 +1,4 @@
-package com.john.shopper.model.jsonModel;
+package com.john.shopper.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,8 +8,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class JSONModel {
@@ -90,12 +88,9 @@ public class JSONModel {
         save();
     }
 
-    public void deleteShoppingListItem(String listId, ShoppingListItem shoppingListItem) {
+    public void deleteShoppingListItem(String listId, int position) {
         int shoppingListIndex = getShoppingListIndexByListId(listId);
-        ShoppingList shoppingList = shoppingLists.get(shoppingListIndex);
-
-        int shoppingListItemIndex = getShoppingListItemIndexByItemId(shoppingListItem.itemId, shoppingList);
-        shoppingLists.get(shoppingListIndex).items.remove(shoppingListItemIndex);
+        shoppingLists.get(shoppingListIndex).items.remove(position);
         save();
     }
 

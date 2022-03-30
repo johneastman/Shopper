@@ -7,8 +7,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.john.shopper.model.jsonModel.ShoppingList;
-import com.john.shopper.model.jsonModel.JSONModel;
+import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.JSONModel;
 
 import org.junit.After;
 import org.junit.Before;

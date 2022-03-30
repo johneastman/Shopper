@@ -1,7 +1,6 @@
 package com.john.shopper;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,14 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.john.shopper.model.ItemsModel;
-import com.john.shopper.model.jsonModel.ShoppingList;
-import com.john.shopper.model.jsonModel.JSONModel;
-import com.john.shopper.model.jsonModel.ShoppingListItem;
+import com.john.shopper.model.old.ItemsModel;
+import com.john.shopper.model.ShoppingList;
+import com.john.shopper.model.JSONModel;
 import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
