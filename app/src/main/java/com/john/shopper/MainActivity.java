@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.john.shopper.model.old.ItemsModel;
 import com.john.shopper.model.ShoppingList;
 import com.john.shopper.model.JSONModel;
 import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
@@ -24,8 +23,6 @@ import com.john.shopper.recyclerviews.ShoppingListsRecyclerViewAdapter;
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
-
-    ItemsModel itemsModel;
 
     RecyclerView recyclerView;
     ShoppingListsRecyclerViewAdapter mAdapter;
