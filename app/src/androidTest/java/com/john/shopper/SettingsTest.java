@@ -28,11 +28,14 @@ public class SettingsTest extends UITestHelper {
 
     Instrumentation inst = InstrumentationRegistry.getInstrumentation();
     Context context = inst.getTargetContext();
-    SettingsModel settingsModel = new SettingsModel(context);
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    @Rule
+    public ActivityScenarioRule<SettingsActivity> settingsActivityRule =
+            new ActivityScenarioRule<>(SettingsActivity.class);
 
     @Before
     public void setup() {
