@@ -30,12 +30,12 @@ import java.util.List;
 public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<ShoppingListItemsRecyclerViewAdapter.ItemsViewHolder> implements ItemMoveCallback.ActionCompletionContract {
     private LayoutInflater mInflater;
     private Context mContext;
-    private String listId;
+    private int listId;
 
     private SettingsModel mSettingsModel;
 
     // data is passed into the constructor
-    public ShoppingListItemsRecyclerViewAdapter(Context context, String listId) {
+    public ShoppingListItemsRecyclerViewAdapter(Context context, int listId) {
         this.mContext = context;
         this.listId = listId;
         this.mInflater = LayoutInflater.from(context);
@@ -80,9 +80,10 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
 
                 items.remove(position);
                 items.add(newPosition, updatedShoppingListItem);
-                JSONModel.getInstance(mContext).updateShoppingListItem(listId, updatedShoppingListItem);
+                JSONModel.getInstance(mContext).updateShoppingListItem(listId, newPosition, updatedShoppingListItem);
 
-                notifyDataSetChanged();
+                notifyItemMoved(position, newPosition);
+                notifyItemChanged(newPosition);
             });
             editItemDialog.setNegativeButton(R.string.new_item_cancel, null);
             editItemDialog.setTitle(R.string.update_item_title);
@@ -149,7 +150,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         if (developerMode) {
             holder.developerModeDisplay.setVisibility(View.VISIBLE);
 
-            holder.developerModeItemIdText.setText(mContext.getString(R.string.item_id_value, shoppingListItem.itemId));
             holder.developerModeItemListIdText.setText(mContext.getString(R.string.item_list_id_value, listId));
             holder.developerModeItemIsCompleteText.setText(mContext.getString(R.string.item_is_complete_value, shoppingListItem.isComplete));
             holder.developerModeItemIsSectionText.setText(mContext.getString(R.string.item_is_section_value, shoppingListItem.isSection));
@@ -194,7 +194,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                     ItemTypes.isSection(itemTypeDescriptor)
             );
             JSONModel.getInstance(mContext).addShoppingListItem(listId, shoppingListItem);
-
             notifyItemInserted(newItemPosition);
         });
         newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
@@ -212,7 +211,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
         ImageButton sectionAddItemButton;
 
         LinearLayout developerModeDisplay;
-        TextView developerModeItemIdText;
         TextView developerModeItemListIdText;
         TextView developerModeItemIsCompleteText;
         TextView developerModeItemIsSectionText;
@@ -227,7 +225,6 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
             sectionAddItemButton = itemView.findViewById(R.id.section_add_item_button);
 
             developerModeDisplay = itemView.findViewById(R.id.developer_mode_display);
-            developerModeItemIdText = itemView.findViewById(R.id.item_id);
             developerModeItemListIdText = itemView.findViewById(R.id.item_list_id);
             developerModeItemIsCompleteText = itemView.findViewById(R.id.item_is_complete);
             developerModeItemIsSectionText = itemView.findViewById(R.id.item_is_section);

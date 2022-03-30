@@ -36,10 +36,25 @@ public class JSONModel {
         return this.shoppingLists;
     }
 
-    public List<ShoppingListItem> getShoppingListItemsByListId(String listId) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
+    public ShoppingList getShoppingListByListId(int shoppingListIndex) {
+        return shoppingLists.get(shoppingListIndex);
+    }
+
+    public List<ShoppingListItem> getShoppingListItemsByListId(int shoppingListIndex) {
         ShoppingList shoppingList = shoppingLists.get(shoppingListIndex);
         return shoppingList == null ? new ArrayList<>() : shoppingList.items;
+    }
+
+    public int getNumberOfIncompleteShoppingListItems(int shoppingListIndex) {
+        ShoppingList shoppingList = getShoppingListByListId(shoppingListIndex);
+        int numIncompleteItems = 0;
+
+        for (ShoppingListItem shoppingListItem : shoppingList.items) {
+            if (!shoppingListItem.isComplete) {
+                numIncompleteItems++;
+            }
+        }
+        return numIncompleteItems;
     }
 
     public void addShoppingList(ShoppingList shoppingList) {
@@ -47,21 +62,12 @@ public class JSONModel {
         save();
     }
 
-    public void addShoppingListItem(String listId, ShoppingListItem shoppingListItem) {
-        for (ShoppingList shoppingList : shoppingLists) {
-            if (shoppingList.listId.equals(listId)) {
-                shoppingList.items.add(shoppingListItem);
-                break;
-            }
-        }
+    public void addShoppingListItem(int shoppingListIndex, ShoppingListItem shoppingListItem) {
+        shoppingLists.get(shoppingListIndex).items.add(shoppingListItem);
         save();
     }
 
-    public void updateShoppingListItem(String listId, ShoppingListItem newShoppingListItem) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
-        ShoppingList shoppingList = shoppingLists.get(shoppingListIndex);
-
-        int shoppingListItemIndex = getShoppingListItemIndexByItemId(newShoppingListItem.itemId, shoppingList);
+    public void updateShoppingListItem(int shoppingListIndex, int shoppingListItemIndex, ShoppingListItem newShoppingListItem) {
         shoppingLists.get(shoppingListIndex).items.set(shoppingListItemIndex, newShoppingListItem);
         save();
     }
@@ -73,8 +79,7 @@ public class JSONModel {
         save();
     }
 
-    public void swapShoppingListItems(String listId, int oldPosition, int newPosition) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
+    public void swapShoppingListItems(int shoppingListIndex, int oldPosition, int newPosition) {
         ShoppingList shoppingList = shoppingLists.get(shoppingListIndex);
 
         ShoppingListItem shoppingListItem = shoppingList.items.get(oldPosition);
@@ -88,14 +93,12 @@ public class JSONModel {
         save();
     }
 
-    public void deleteShoppingListItem(String listId, int position) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
+    public void deleteShoppingListItem(int shoppingListIndex, int position) {
         shoppingLists.get(shoppingListIndex).items.remove(position);
         save();
     }
 
-    public void deleteAllShoppingListItemsByListId(String listId) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
+    public void deleteAllShoppingListItemsByListId(int shoppingListIndex) {
         shoppingLists.get(shoppingListIndex).items.clear();
         save();
     }
@@ -109,12 +112,11 @@ public class JSONModel {
         return shoppingLists.size();
     }
 
-    public int getNumberOfItemsInShoppingList(String listId) {
-        int shoppingListIndex = getShoppingListIndexByListId(listId);
+    public int getNumberOfItemsInShoppingList(int shoppingListIndex) {
         return shoppingLists.get(shoppingListIndex).items.size();
     }
 
-    public void save() {
+    private void save() {
         Gson gson = new Gson();
         String jsonData = gson.toJson(shoppingLists);
 
@@ -134,26 +136,6 @@ public class JSONModel {
         Type type = new TypeToken<List<ShoppingList>>() {}.getType();
         List<ShoppingList> data = gson.fromJson(jsonData, type);
         return data == null ? new ArrayList<>() : data;
-    }
-
-    private int getShoppingListIndexByListId(String listId) {
-        for (int i = 0; i < shoppingLists.size(); i++) {
-            ShoppingList shoppingList = shoppingLists.get(i);
-            if (shoppingList.listId.equals(listId)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private int getShoppingListItemIndexByItemId(String itemId, ShoppingList shoppingList) {
-        for (int i = 0; i < shoppingList.items.size(); i++) {
-            ShoppingListItem shoppingListItem = shoppingList.items.get(i);
-            if (shoppingListItem.itemId.equals(itemId)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     private SharedPreferences getSharedPreferences() {

@@ -32,7 +32,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
     List<String> itemNames = Arrays.asList("A", "B", "C", "D", "E");
 
     ShoppingListItemsRecyclerViewAdapter recyclerViewAdapter;
-    String listId;
+    int listId;
 
     @Before
     public void setup() {
@@ -40,7 +40,7 @@ public class ShoppingListItemRecyclerViewAdapterTest {
         cleanup(); // Run cleanup in case there is any stale data
 
         ShoppingList shoppingList = new ShoppingList(SHOPPING_LIST_NAME, new ArrayList<>());
-        listId = shoppingList.listId;
+        listId = 0;
         JSONModel.getInstance(context).addShoppingList(shoppingList);
 
         List<ShoppingListItem> items = new ArrayList<>();

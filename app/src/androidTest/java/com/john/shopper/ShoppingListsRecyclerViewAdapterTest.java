@@ -29,7 +29,7 @@ public class ShoppingListsRecyclerViewAdapterTest {
     protected class ShoppingListDataContainer {
         public String shoppingListName;
         public List<String> shoppingListItemNames;
-        public String listId;
+        public int listId;
 
         public ShoppingListDataContainer(String shoppingListName, List<String> shoppingListItemNames) {
             this.shoppingListName = shoppingListName;
@@ -56,17 +56,18 @@ public class ShoppingListsRecyclerViewAdapterTest {
                 new ArrayList<>(Arrays.asList("4", "5", "6"))));
 
         for (Map.Entry entry : mockData.entrySet()) {
+            int listId = (int) entry.getKey();
             ShoppingListDataContainer data = (ShoppingListDataContainer) entry.getValue();
 
             ShoppingList shoppingList = new ShoppingList(data.shoppingListName, new ArrayList<>());
-            data.listId = shoppingList.listId;
+            data.listId = listId;
             JSONModel.getInstance(context).addShoppingList(shoppingList);
 
             for (int i = 0; i < data.shoppingListItemNames.size(); i++) {
 
                 ShoppingListItem shoppingListItem = new ShoppingListItem(
                         data.shoppingListItemNames.get(i), 1, false, false);
-                JSONModel.getInstance(context).addShoppingListItem(shoppingList.listId, shoppingListItem);
+                JSONModel.getInstance(context).addShoppingListItem(listId, shoppingListItem);
             }
         }
 

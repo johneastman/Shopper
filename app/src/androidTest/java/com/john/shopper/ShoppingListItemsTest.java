@@ -10,8 +10,11 @@ package com.john.shopper;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.app.ActionBar;
 import android.app.Instrumentation;
 import android.content.Context;
 
@@ -47,7 +50,7 @@ public class ShoppingListItemsTest extends UITestHelper {
     private static final String SHOPPING_LIST_NAME = "testList1";
 
     @Rule
-    public ActivityScenarioRule<MainActivity> activityRule =
+    public ActivityScenarioRule<MainActivity> mainActivityRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
@@ -88,10 +91,7 @@ public class ShoppingListItemsTest extends UITestHelper {
         performClickOnOverflowMenuItem(context, R.string.clear_all_items);
 
         // Assert that list of items is empty
-        String shoppingListId = getShoppingListId(SHOPPING_LIST_NAME);
-        if (shoppingListId == null) {
-            fail("No shopping list found. Shopping list id: " + shoppingListId);
-        }
+        int shoppingListId = getShoppingListId(SHOPPING_LIST_NAME);
 
         List<ShoppingListItem> shoppingListItems = JSONModel.getInstance(context).getShoppingListItemsByListId(shoppingListId);
         assertEquals(0, shoppingListItems.size());
@@ -297,18 +297,20 @@ public class ShoppingListItemsTest extends UITestHelper {
                 .check(matches(isEqualTo("Move Item To")));
     }
 
-    private String getShoppingListId(String shoppingListName) {
+    private int getShoppingListId(String shoppingListName) {
         List<ShoppingList> shoppingLists = JSONModel.getInstance(context).getShoppingLists();
-        String shoppingListId = null;
-        for (ShoppingList shoppingList : shoppingLists) {
+        int shoppingListId = -1;
+        for (int i = 0; i < shoppingLists.size(); i++) {
+            ShoppingList shoppingList = shoppingLists.get(i);
             if (shoppingList.name.equals(shoppingListName)) {
-                shoppingListId = shoppingList.listId;
+                shoppingListId = i;
+                break;
             }
         }
 
-        if (shoppingListId == null) {
+        if (shoppingListId == -1) {
             String message = String.format(
-                    "No Shopping list found with name %s. Shopping list id: %s",
+                    "No Shopping list found with name %s. Shopping list id: %d",
                     SHOPPING_LIST_NAME, shoppingListId);
             fail(message);
         }
@@ -317,7 +319,7 @@ public class ShoppingListItemsTest extends UITestHelper {
     }
 
     private boolean isItemInShoppingList(String shoppingListName, String itemName) {
-        String listId = getShoppingListId(shoppingListName);
+        int listId = getShoppingListId(shoppingListName);
         List<ShoppingListItem> items = JSONModel.getInstance(context).getShoppingListItemsByListId(listId);
 
         for (ShoppingListItem item : items) {
@@ -329,7 +331,7 @@ public class ShoppingListItemsTest extends UITestHelper {
     }
 
     private boolean doAllItemsHaveSameCompleteStatus(String shoppingListName, boolean isComplete) {
-        String shoppingListId = getShoppingListId(shoppingListName);
+        int shoppingListId = getShoppingListId(shoppingListName);
         for (ShoppingListItem item : JSONModel.getInstance(context).getShoppingListItemsByListId(shoppingListId)) {
             if (item.isComplete != isComplete) {
                 return false;
