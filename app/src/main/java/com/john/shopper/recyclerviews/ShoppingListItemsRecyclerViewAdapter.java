@@ -193,7 +193,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                     false,
                     ItemTypes.isSection(itemTypeDescriptor)
             );
-            JSONModel.getInstance(mContext).addShoppingListItem(listId, shoppingListItem);
+            JSONModel.getInstance(mContext).addShoppingListItemAtPosition(listId, newItemPosition, shoppingListItem);
             notifyItemInserted(newItemPosition);
         });
         newItemDialog.setNegativeButton(R.string.new_item_cancel, null);

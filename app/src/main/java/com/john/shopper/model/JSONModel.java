@@ -67,6 +67,11 @@ public class JSONModel {
         save();
     }
 
+    public void addShoppingListItemAtPosition(int shoppingListIndex, int shoppingListItemPosition, ShoppingListItem shoppingListItem) {
+        shoppingLists.get(shoppingListIndex).items.add(shoppingListItemPosition, shoppingListItem);
+        save();
+    }
+
     public void updateShoppingListItem(int shoppingListIndex, int shoppingListItemIndex, ShoppingListItem newShoppingListItem) {
         shoppingLists.get(shoppingListIndex).items.set(shoppingListItemIndex, newShoppingListItem);
         save();
