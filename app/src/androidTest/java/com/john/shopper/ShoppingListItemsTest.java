@@ -4,17 +4,14 @@
  * Negative: android.R.id.button2
  * Neutral: android.R.id.button3
  *
- * May need to call .perform(closeSoftKeyboard) if a UI element can't be found
+ * May need to call .perform(closeSoftKeyboard) if a UI element is covered by the keyboard
  */
 package com.john.shopper;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.app.ActionBar;
 import android.app.Instrumentation;
 import android.content.Context;
 

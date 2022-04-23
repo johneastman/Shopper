@@ -244,6 +244,7 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                 selectedShoppingListItem.isComplete = !selectedShoppingListItem.isComplete;
             }
 
+            JSONModel.getInstance(mContext).updateShoppingListItem(listId, position, selectedShoppingListItem);
             notifyItemChanged(position);
         }
     }
