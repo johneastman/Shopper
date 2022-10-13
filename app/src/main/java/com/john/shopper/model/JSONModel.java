@@ -51,7 +51,7 @@ public class JSONModel {
 
         for (ShoppingListItem shoppingListItem : shoppingList.items) {
             if (!shoppingListItem.isComplete) {
-                numIncompleteItems++;
+                numIncompleteItems += shoppingListItem.quantity;
             }
         }
         return numIncompleteItems;
