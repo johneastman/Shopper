@@ -9,12 +9,19 @@
 package com.john.shopper;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Instrumentation;
 import android.content.Context;
 
+import androidx.test.espresso.action.GeneralSwipeAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -203,6 +210,57 @@ public class ShoppingListItemsTest extends UITestHelper {
 
         // Assert that the item no longer exists in the shopping list
         assertFalse(isItemInShoppingList(SHOPPING_LIST_NAME, itemName));
+    }
+
+    @Test
+    public void testUpdateItemWhenAllItemsAddedToTopOfList() {
+        // Add a shopping list
+        performClickWithId(R.id.new_item);
+        inputText(R.id.new_shopping_list_name, SHOPPING_LIST_NAME);
+        performClickWithId(android.R.id.button1);
+
+        // Select Shopping List
+        selectRecyclerViewRowByText(R.id.recycler_view, SHOPPING_LIST_NAME);
+
+        // Add Items to shopping list
+        List<String> items = new ArrayList<>(Arrays.asList("A", "B", "C", "D"));
+
+        for (String itemName : items) {
+
+            // New Item Menu Option
+            performClickWithId(R.id.new_item);
+
+            // Enter item name in input field
+            inputText(R.id.new_item_edit_text, itemName);
+
+            // Select Top of list radio button
+            performClickWithText(R.string.new_item_top_of_list);
+
+            // Add item
+            performClickWithId(android.R.id.button1);
+        }
+
+        // Select Edit button on item at bottom of list
+        selectChildViewOnRecyclerView(R.id.recycler_view, "A", R.id.edit_item_button);
+
+        // Change item name in text field
+        inputText(R.id.new_item_edit_text, " Updated");
+
+        // Update the item's name
+        performClickWithId(android.R.id.button1);
+
+        // Check that the values in each item are expected
+        onView(withId(R.id.recycler_view))
+                .check(matches(atPosition(0, hasDescendant(withText("D")))));
+
+        onView(withId(R.id.recycler_view))
+                .check(matches(atPosition(1, hasDescendant(withText("C")))));
+
+        onView(withId(R.id.recycler_view))
+                .check(matches(atPosition(2, hasDescendant(withText("B")))));
+
+        onView(withId(R.id.recycler_view))
+                .check(matches(atPosition(3, hasDescendant(withText("A Updated")))));
     }
 
     @Test

@@ -194,7 +194,16 @@ public class ShoppingListItemsRecyclerViewAdapter extends RecyclerView.Adapter<S
                     ItemTypes.isSection(itemTypeDescriptor)
             );
             JSONModel.getInstance(mContext).addShoppingListItemAtPosition(listId, newItemPosition, shoppingListItem);
-            notifyItemInserted(newItemPosition);
+
+            /* Must notify that the entire data set has changed because if the user wants to add an item
+             * to the top of a list, the position of all items in the list move down by 1. So simply
+             * calling "notifyItemInserted" will not suffice.
+             *
+             * This was changed due to a bug where back-to-back item additions to the top of the list
+             * meant trying to update any of the 1 - n items would always update the first/0th item
+             * in the list.
+             */
+            notifyDataSetChanged();
         });
         newItemDialog.setNegativeButton(R.string.new_item_cancel, null);
         newItemDialog.setTitle(R.string.new_item_title);
