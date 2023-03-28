@@ -1,3 +1,6 @@
+# ARCHIVAL NOTICE
+This project is being rebuilt and modernized in a new project called [TODO](https://github.com/johneastman/todo). This repository has been archived. 
+
 # Shopper
 A Shopping list app.
 
